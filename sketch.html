@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Continuous Synced Silhouette Stroke — Dynamic Info Panel</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: none;
+            font-family: system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        svg {
+            width: min(80vmin, 900px);
+            height: auto;
+            display: block;
+        }
+
+        .hint {
+            position: fixed;
+            bottom: 10px;
+            left: 12px;
+            opacity: .7;
+            font-size: 12px;
+        }
+
+        .content-wrapper {
+            width: 100%;
+            max-width: 90rem;
+            padding: 2rem;
+        }
+
+        /* Keeps info next to SVG on large screens */
+        .top-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .top-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content-wrapper">
+        <!-- TOP: SVG + Dynamic Info -->
+        <section class="top-section mb-10">
+            <!-- LEFT: SVG -->
+            <div class="flex justify-center">
+                <svg id="stage" viewBox="0 0 1200 1200" preserveAspectRatio="xMidYMid meet">
+                    <g id="fitGroup">
+                        <path id="pathA" fill="none" stroke="#000" stroke-width="3" stroke-linejoin="round"
+                            stroke-linecap="round" vector-effect="non-scaling-stroke" />
+                        <path id="pathB" fill="none" stroke="#000" stroke-width="3" stroke-linejoin="round"
+                            stroke-linecap="round" vector-effect="non-scaling-stroke" />
+
+                    </g>
+                </svg>
+            </div>
+
+            <!-- RIGHT: Dynamic Info (name/date/desc only) -->
+            <aside id="infoPanel" class="leading-relaxed text-zinc-900 transition-opacity duration-500">
+                <h2 id="silhouetteTitle" class="text-2xl font-semibold mb-3">Loading…</h2>
+                <p id="silhouetteName" class="text-lg font-medium text-zinc-800 mb-2"></p>
+                <p id="silhouetteDate" class="italic mb-3 text-sm text-zinc-700"></p>
+                <p id="silhouetteDesc" class="text-sm text-zinc-800"></p>
+            </aside>
+        </section>
+
+        <!-- BOTTOM: Static explanatory content -->
+        <section id="context" class="max-w-3xl mx-auto text-zinc-900">
+            <hr class="my-8 border-zinc-300">
+            <h3 class="font-semibold mb-3 text-lg">William Bache’s Technique</h3>
+            <p class="mb-4 text-sm">
+                William Bache's technique involved using a patented physiognotrace, a mechanical device that traced the
+                outline
+                of a person's face with “mathematical correctness” without touching the skin, allowing him to rapidly
+                produce
+                thousands of affordable silhouette portraits. He traveled extensively along the eastern seaboard of the
+                U.S. and
+                to Cuba, offering shaded profiles to a broad range of society.
+            </p>
+            <h4 class="font-semibold mb-2 text-sm">Key Aspects of Bache's Technique</h4>
+            <ul class="list-disc pl-5 space-y-1 text-sm">
+                <li><b>Physiognotrace:</b> Mechanical drawing frame adapted and patented by Bache and partners.</li>
+                <li><b>Mechanical Precision:</b> Allowed highly accurate profiles to be captured.</li>
+                <li><b>Rapid Production:</b> Enabled quick portrait creation.</li>
+                <li><b>Affordability:</b> “Four correct profiles for 25 cents.”</li>
+                <li><b>Itinerant Practice:</b> Traveled widely, including Cuba.</li>
+                <li><b>Shaded Profiles:</b> Focused on shaded silhouette portraiture.</li>
+            </ul>
+        </section>
+    </div>
+
+    <!-- <div class="hint">continuous synced + fading erase…</div> -->
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/MorphSVGPlugin.min.js"></script>
+
+    <script>
+
+
+
+        window.addEventListener("load", async () => {
+            const stage = document.getElementById("stage");
+            const fitGroup = document.getElementById("fitGroup");
+            const pathA = document.getElementById("pathA");
+            const pathB = document.getElementById("pathB");
+            const hint = document.querySelector(".hint");
+
+            const infoPanel = document.getElementById("infoPanel");
+            const infoTitle = document.getElementById("silhouetteTitle");
+            const infoName = document.getElementById("silhouetteName");
+            const infoDate = document.getElementById("silhouetteDate");
+            const infoDesc = document.getElementById("silhouetteDesc");
+
+            gsap.registerPlugin(MorphSVGPlugin);
+            const svgNS = "http://www.w3.org/2000/svg";
+
+            function svgUrlForId(id) {
+                if (!id) return null;
+                if (id.includes("/") || id.toLowerCase().endsWith(".svg")) return id;
+                return `output_svgs/${id}.svg`;
+            }
+
+            async function fetchPathD(url) {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error(`Failed to fetch ${url}`);
+                const txt = await res.text();
+                const doc = new DOMParser().parseFromString(txt, "image/svg+xml");
+                const path = doc.querySelector("path");
+                if (!path) throw new Error(`No <path> in ${url}`);
+                return path.getAttribute("d");
+            }
+
+            // Load dataset
+            let dataset = [];
+            try {
+                const res = await fetch("data/dataset.json");
+                dataset = await res.json();
+            } catch (e) {
+                console.warn("Could not load dataset:", e);
+            }
+
+            function updateInfoPanel(filename) {
+                // Normalize filename so both "00097" and "00097.svg" work
+                const key = String(filename).replace(/\.svg$/i, "");
+
+                // Try to find by filename, svgName, or svgPath (robust lookup)
+                const entry = dataset.find(d =>
+                    String(d.filename || "").replace(/\.svg$/i, "") === key ||
+                    String(d.svgName || "").replace(/\.svg$/i, "") === key ||
+                    String(d.svgPath || "").includes(`${key}.svg`)
+                );
+
+                gsap.to(infoPanel, {
+                    opacity: 0, duration: 1.5, onComplete: () => {
+                        if (entry) {
+                            infoTitle.textContent = entry.title || "Untitled silhouette";
+                            infoName.textContent = entry.name ? `Name: ${entry.name}` : "";
+                            infoDate.textContent = entry.date ? `Date: ${entry.date}` : "";
+                            infoDesc.textContent = entry.physicalDescription || "";
+                        } else {
+                            infoTitle.textContent = "No data found";
+                            infoName.textContent = "";
+                            infoDate.textContent = "";
+                            infoDesc.textContent = "Check dataset.json or filename keys.";
+                        }
+                        gsap.to(infoPanel, { opacity: 1, duration: 1.5 });
+                    }
+                });
+            }
+
+
+
+            try {
+                let ids = [];
+                try {
+                    const raw = localStorage.getItem("morphSelection");
+                    ids = raw ? JSON.parse(raw) : [];
+                } catch { ids = []; }
+                if (!Array.isArray(ids) || ids.length === 0)
+                    ids = ["00097", "00098", "00099"];
+
+                const ds = [];
+                for (const id of ids) {
+                    const url = svgUrlForId(String(id).trim());
+                    if (!url) continue;
+                    try {
+                        ds.push({ id, d: await fetchPathD(url) });
+                    } catch (e) { console.warn("Skipping", url, e); }
+                }
+                if (ds.length === 0) throw new Error("No valid SVG paths loaded");
+
+                // Fit to viewBox
+                const refs = ds.map(obj => {
+                    const p = document.createElementNS(svgNS, "path");
+                    p.setAttribute("d", obj.d);
+                    p.style.visibility = "hidden";
+                    fitGroup.appendChild(p);
+                    return p;
+                });
+                const vb = stage.viewBox.baseVal;
+                const bb0 = refs[0].getBBox();
+                let minX = bb0.x, minY = bb0.y, maxX = bb0.x + bb0.width, maxY = bb0.y + bb0.height;
+                refs.forEach(r => {
+                    const b = r.getBBox();
+                    minX = Math.min(minX, b.x);
+                    minY = Math.min(minY, b.y);
+                    maxX = Math.max(maxX, b.x + b.width);
+                    maxY = Math.max(maxY, b.y + b.height);
+                });
+                const bw = Math.max(1, maxX - minX);
+                const bh = Math.max(1, maxY - minY);
+                const scale = Math.min(vb.width / bw, vb.height / bh) * 0.92;
+                const tx = (vb.width - bw * scale) * 0.5 - minX * scale;
+                const ty = (vb.height - bh * scale) * 0.5 - minY * scale;
+                fitGroup.setAttribute("transform", `matrix(${scale} 0 0 ${scale} ${tx} ${ty})`);
+                refs.forEach(r => r.remove());
+
+                // --- animation setup ---
+                let current = pathA, next = pathB;
+                let i = 0;
+
+                current.setAttribute("d", ds[0].d);
+                const L = current.getTotalLength();
+                gsap.set(current, { strokeDasharray: L, strokeDashoffset: 0, opacity: 1, strokeOpacity: 1 });
+                gsap.set(next, { opacity: 0, strokeOpacity: 1 });
+
+                const duration = 6.0;
+
+                const eraseStart = 0.05;
+                const eraseSpeed = 2.5;
+                const EPS = L * 3e-4;
+
+                // ...existing code...
+                function cycle() {
+                    const nextIndex = (i + 1) % ds.length;
+                    const dNext = ds[nextIndex].d;
+                    const filename = ds[nextIndex].id;
+
+                    // update info panel for the silhouette we are about to animate
+                    updateInfoPanel(filename);
+
+                    next.setAttribute("d", dNext);
+                    const lenNext = next.getTotalLength();
+
+                    gsap.set(next, { strokeDasharray: lenNext, strokeDashoffset: lenNext, opacity: 1, strokeOpacity: 1 });
+                    gsap.set(current, { strokeDasharray: lenNext, strokeDashoffset: 0, strokeOpacity: 1 });
+
+                    const tl = gsap.timeline({
+                        defaults: { ease: "none" },
+                        onComplete: () => {
+                            gsap.set(current, { strokeDashoffset: lenNext, opacity: 0, strokeOpacity: 0 });
+                            gsap.set(next, { strokeDashoffset: 0, opacity: 1, strokeOpacity: 1 });
+                            const tmp = current;
+                            current = next;
+                            next = tmp;
+                            i = nextIndex;
+                            cycle();
+                        }
+                    });
+
+
+
+                    const proxy = { t: 0 };
+                    tl.to(proxy, {
+                        t: 1,
+                        duration,
+                        onUpdate: () => {
+                            const t = proxy.t;
+                            let nextOff = (1 - t) * lenNext;
+                            if (nextOff < EPS) nextOff = 0;
+                            next.style.strokeDashoffset = nextOff;
+
+                            if (t > eraseStart) {
+                                const eraseProgress = Math.min((t - eraseStart) / (1 - eraseStart) * eraseSpeed, 1);
+                                let currOff = -eraseProgress * lenNext;
+                                if (Math.abs(currOff + lenNext) < EPS) currOff = -lenNext;
+                                current.style.strokeDashoffset = currOff;
+                                if (eraseProgress > 0.99) current.style.strokeOpacity = 0;
+                            } else {
+                                current.style.strokeDashoffset = 0;
+                                current.style.strokeOpacity = 1;
+                            }
+
+                            const fadeRatio = 0.35;
+                            if (t > fadeRatio) {
+                                const fadeProgress = (t - fadeRatio) / (1 - fadeRatio);
+                                current.style.opacity = 1 - fadeProgress;
+                            } else {
+                                current.style.opacity = 1;
+                            }
+                        }
+                    });
+                }
+
+                updateInfoPanel(ds[0].id);
+                cycle();
+
+            } catch (err) {
+                console.error(err);
+                if (hint) hint.textContent = "Error: " + err.message;
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="styles.css">
+
+    <title>Webcam Button Demo</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            /* vertical center */
+            justify-content: center;
+            /* horizontal center */
+            background-color: rgb(255, 255, 255);
+        }
+
+        #selfie-logo {
+            display: block;
+            max-width: 18%;
+            height: auto;
+            margin-left: 10px;
+            padding: 8px 0;
+        }
+
+        /* Back to gallery link below the logo */
+        #back-gallery {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 6px 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.65rem;
+            display: inline-flex;
+            align-items: center;
+        }
+
+
+
+        .wrap {
+            display: grid;
+            gap: 1rem;
+            max-width: 900px;
+            width: 100%;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            margin-bottom: 0;
+            color: #000000;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+            align-items: center;
+        }
+
+        button,
+        select {
+            padding: .6rem .9rem;
+            border-radius: .6rem;
+            border: 1px solid #8884;
+            cursor: pointer;
+        }
+
+        video,
+        canvas,
+        img {
+            width: 100%;
+            max-width: 640px;
+            border-radius: .8rem;
+            border: 1px solid #8884;
+            background: #000;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+
+        #downloadLink {
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-top: .5rem;
+            padding: .5rem .8rem;
+            background: #272727;
+            color: #fff;
+            text-decoration: none;
+            border-radius: .5rem;
+        }
+
+
+        @media (max-width: 900px) {
+            .row {
+                grid-template-columns: 1fr;
+
+            }
+        }
+
+        @media (max-width: 480px) {
+            #site-logo {
+                width: 40px;
+                top: 10px;
+                left: 10px;
+            }
+
+        }
+
+        @media (max-width: 480px) {
+            #back-gallery {
+                left: 72px;
+                font-size: 0.85rem;
+                padding: 5px 8px;
+            }
+
+        }
+
+
+        .note {
+            font-size: .95rem;
+            opacity: .8;
+        }
+
+        .error {
+            color: #b00020;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+    <div class="top container mx-auto px-4 sticky top-0 z-50">
+        <div id="sticky-header" class="grid grid-cols-1 md:grid-cols-3 items-center gap-4">
+            <div id="headline" class="box headline md:col-span-1">
+                <a href="index.html"><img src="assets/logo.svg" alt="Headline" id="selfie-logo"></a>
+            </div>
+        </div>
+        <div>
+            <a href="gallery.html">
+                <button class="create-btn" title="Back to gallery">
+                    Back to gallery
+                </button>
+            </a>
+
+
+
+
+
+
+        </div>
+    </div>
+    </div>
+
+
+    <div class="wrap">
+        <h1>Open Your Webcam</h1>
+
+        <div class="controls">
+            <button id="openBtn">Open camera</button>
+            <button id="stopBtn" disabled>Stop</button>
+            <button id="snapBtn" disabled>Capture photo</button>
+            <label>
+                Camera:
+                <select id="deviceSelect"></select>
+            </label>
+        </div>
+
+        <div class="row">
+            <div>
+                <video id="video" playsinline autoplay muted></video>
+            </div>
+            <div>
+                <canvas id="canvas" width="640" height="480" hidden></canvas>
+                <img id="preview" alt="Snapshot will appear here" />
+                <div class="controls">
+                    <a id="downloadLink" download="snapshot.png" hidden>Download snapshot</a>
+                </div>
+            </div>
+        </div>
+
+        <p class="note">
+            Tip: This page must be served over <strong>HTTPS</strong> (or <code>http://localhost</code>) for the
+            browser
+            to allow camera access.
+            On iOS/Safari, you must tap a button to start the camera.
+        </p>
+        <p id="error" class="error" role="alert" hidden></p>
+    </div>
+
+    <script>
+        const openBtn = document.getElementById('openBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const snapBtn = document.getElementById('snapBtn');
+        const deviceSelect = document.getElementById('deviceSelect');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const preview = document.getElementById('preview');
+        const downloadLink = document.getElementById('downloadLink');
+        const errorEl = document.getElementById('error');
+
+        let currentStream = null;
+
+        async function listDevices() {
+            try {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoInputs = devices.filter(d => d.kind === 'videoinput');
+                deviceSelect.innerHTML = '';
+                for (const d of videoInputs) {
+                    const opt = document.createElement('option');
+                    opt.value = d.deviceId;
+                    opt.textContent = d.label || `Camera ${deviceSelect.length + 1}`;
+                    deviceSelect.appendChild(opt);
+                }
+                if (videoInputs.length === 0) {
+                    deviceSelect.innerHTML = '<option value="">No camera found</option>';
+                }
+            } catch (err) {
+                showError(err);
+            }
+        }
+
+        async function openCamera() {
+            clearError();
+            try {
+                // stop previous stream if any
+                stopStream();
+
+                const deviceId = deviceSelect.value || undefined;
+                const constraints = {
+                    video: deviceId ? { deviceId: { exact: deviceId } } : { facingMode: 'user' },
+                    audio: false
+                };
+
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                currentStream = stream;
+                video.srcObject = stream;
+
+                // Some browsers need play() to be awaited after setting srcObject
+                await video.play();
+
+                openBtn.disabled = true;
+                stopBtn.disabled = false;
+                snapBtn.disabled = false;
+
+                // After getting permission once, labels become available
+                await listDevices();
+            } catch (err) {
+                showError(err);
+            }
+        }
+
+        function stopStream() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(t => t.stop());
+                currentStream = null;
+            }
+            video.srcObject = null;
+            openBtn.disabled = false;
+            stopBtn.disabled = true;
+            snapBtn.disabled = true;
+        }
+
+        function capturePhoto() {
+            if (!currentStream) return;
+            const track = currentStream.getVideoTracks()[0];
+            const settings = track.getSettings();
+            const w = settings.width || 640;
+            const h = settings.height || 480;
+            canvas.width = w; canvas.height = h;
+
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, w, h);
+            const dataUrl = canvas.toDataURL('image/png');
+            preview.src = dataUrl;
+            downloadLink.href = dataUrl;
+            downloadLink.hidden = false;
+            downloadLink.textContent = 'Download snapshot';
+        }
+
+        function showError(err) {
+            console.error(err);
+            errorEl.hidden = false;
+            errorEl.textContent = err?.message || String(err);
+        }
+        function clearError() { errorEl.hidden = true; errorEl.textContent = ''; }
+
+        // Wire up events
+        openBtn.addEventListener('click', openCamera);
+        stopBtn.addEventListener('click', stopStream);
+        snapBtn.addEventListener('click', capturePhoto);
+        deviceSelect.addEventListener('change', () => { if (!openBtn.disabled) return; openCamera(); });
+
+        // Populate device list early (labels may be blank until permission granted)
+        if (navigator.mediaDevices?.enumerateDevices) {
+            listDevices();
+        }
+
+        // Handle page unload
+        window.addEventListener('beforeunload', stopStream);
+
+
+    </script>
+
+</body>
+
+</html>

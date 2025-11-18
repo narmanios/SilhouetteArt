@@ -1,0 +1,999 @@
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 24px;
+  background-image: url("assets/tile.png");
+  background-color: white;
+
+  background-repeat: repeat;
+  background-position: top left;
+}
+
+/* remove later */
+.bg {
+  background-color: white;
+}
+
+#sticky-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 9998;
+  background-color: #000000 !important;
+  box-sizing: border-box;
+  padding: 12px 24px;
+}
+
+/* offset so content does not go behind sticky header */
+main,
+.content,
+#gallery {
+  margin-top: 56px;
+}
+#filter {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  display: inline-block;
+  min-width: 160px;
+  padding: 8px 38px 8px 12px; /* room for custom arrow on the right */
+  font-size: 14px;
+  color: #fff;
+  background-color: rgba(
+    98,
+    98,
+    98,
+    0.35
+  ); /* subtle background to match dark header */
+  /* border: 1px solid rgba(255, 255, 255, 0.06); */
+  border-radius: 4px;
+  line-height: 1.2;
+  cursor: pointer;
+  /* transition: box-shadow 150ms ease, transform 80ms ease,
+    background-color 150ms ease; */
+  box-shadow: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path d='M6 8l4 4 4-4' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px 16px;
+}
+
+.create-btn {
+  padding: 10px 18px;
+  background-color: rgba(98, 98, 98, 0.35);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.65rem;
+  font-weight: 600;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+}
+
+.view-btn {
+  padding: 10px 18px;
+  background-color: rgba(98, 98, 98, 0.35);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.65rem;
+  font-weight: 600;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+}
+.view-btn img {
+  width: 100%;
+  height: auto;
+  padding-right: 4px;
+}
+/* .view-btn span {
+  display: inline-block;
+  width: 20px;
+} */
+
+/* selected state for gallery/cols */
+.gallery-item.selected,
+.col.selected {
+  outline: 3px solid rgb(190, 0, 0); /* Tailwind blue-600 equivalent */
+  z-index: 2;
+}
+
+/* large-gallery (full-screen preview) */
+.large-gallery {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55); /* dimmer */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 9999;
+  backdrop-filter: blur(6px) saturate(90%); /* soft blur of background content */
+}
+
+.large-gallery .carousel-outer {
+  width: min(92vw, 1100px);
+  max-width: 1100px;
+  max-height: 90vh;
+  box-sizing: border-box;
+  background: rgba(255, 252, 223, 0.96); /* panel background */
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 40px 80px rgba(2, 6, 23, 0.65),
+    /* deep outer shadow */ 0 8px 24px rgba(0, 0, 0, 0.45); /* softer inner lift */
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  position: relative;
+  overflow: hidden;
+}
+
+.large-gallery .close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1010;
+}
+
+.large-gallery .carousel-image-area {
+  width: 100%;
+  max-height: calc(90vh - 90px);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+#large-gallery .morph-btn,
+#large-gallery #lightbox-morph-btn {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  background: #fff;
+  color: #111;
+  transform: translateX(-50%);
+  z-index: 1000; /* above carousel content */
+  display: inline-block;
+}
+
+/* Carousel / large gallery styles */
+.carousel-outer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.carousel-image-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.carousel-image-collection {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+.carousel-image-container {
+  position: relative;
+  display: inline-block;
+  max-width: 900px;
+  max-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 16px;
+  z-index: 0;
+}
+
+/* base image (background) */
+.carousel-image-container .carousel-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 900px;
+  max-height: 90vh;
+  /* border-radius: 16px; */
+  /* box-shadow: 0 4px 32px rgba(0, 0, 0, 0.45); */
+  object-fit: contain;
+  /* z-index: 1; behind the silo image */
+  position: relative;
+  transition: opacity 0.085s ease; /* animate only when opacity changes */
+}
+
+/* hide the base image when the container is hovered or focused */
+.carousel-image-container:hover > img.carousel-img,
+.carousel-image-container:focus-within > img.carousel-img {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+}
+
+/* overlay silhouette image sits on top */
+.carousel-image-container .silo-img {
+  position: absolute;
+  top: -24px;
+  left: 0px;
+  /* inset: -4px; */
+  width: 100%;
+  height: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  border-radius: 16px;
+  object-fit: contain;
+  z-index: 4;
+  visibility: visible;
+}
+
+.carousel-image-container .silo-img {
+  transition: filter 220ms ease, opacity 200ms ease;
+}
+.carousel-image-container:hover .silo-img,
+.carousel-image-container:focus-within .silo-img {
+  /* example: light yellow tint */
+  filter: invert(100%) sepia(10%) saturate(600%) hue-rotate(45deg) brightness(1);
+}
+
+/* optional caption below each frame when present */
+.carousel-caption {
+  max-width: 360px;
+  margin-top: 12px;
+  color: #000000;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.2;
+}
+.large-gallery .close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10010;
+}
+
+/* controls */
+.close-btn {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 100020;
+  padding: 8px 12px;
+  background: #fff;
+  color: #111;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.carousel-prev,
+.carousel-next {
+  background: rgba(255, 255, 255, 0.06);
+  border: none;
+  color: #fff;
+  padding: 10px 12px;
+  font-size: 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* accessibility / focus */
+.carousel-prev:focus,
+.carousel-next:focus,
+.close-btn:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.22);
+  outline-offset: 2px;
+}
+
+/* ...existing code... */
+
+/* arrows */
+.carousel-prev,
+.carousel-next {
+  background: #fff;
+  color: #222;
+  border: none;
+  font-size: 2rem;
+  padding: 8px 12px;
+  cursor: pointer;
+  z-index: 10001;
+  opacity: 0.9;
+  margin: 0 8px;
+  height: 56px;
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* helper utilities */
+.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 180ms ease, visibility 180ms;
+}
+.no-scroll {
+  overflow: hidden;
+}
+
+/* Headline / sticky header: minimal rules, layout via Tailwind */
+.headline {
+  display: block;
+}
+#headline .headline-img,
+.headline .headline-img {
+  display: block;
+  max-width: 55%;
+  height: auto;
+  margin-left: 10px;
+  padding: 8px 0;
+}
+
+/* Gallery tiles: keep sizing/image behavior; grid/columns controlled via Tailwind on #gallery */
+#gallery {
+  width: 100%;
+  padding-bottom: 20px;
+  gap: 0.5rem;
+  display: grid; /* fallback if Tailwind not applied */
+  /* extra space between fixed/sticky header and the gallery */
+  --gallery-top-offset: 20px;
+  padding-top: var(--gallery-top-offset);
+}
+/* NEW: make each gallery cell square and ensure images fill the cell */
+#gallery > * {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  min-width: 0;
+}
+
+#gallery > * img,
+#gallery > .gallery-item img,
+.gallery-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* floating bottom-center scroll card */
+.scroll-card {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%) translateY(100%);
+  opacity: 0;
+  transition: transform 0.28s ease, opacity 0.28s ease;
+  background: rgba(12, 12, 12, 0.92);
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+  z-index: 11000;
+  max-width: calc(100% - 40px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.95rem;
+  pointer-events: auto;
+  z-index: 9000;
+}
+
+/* visible state */
+.scroll-card.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* small-screen tweak */
+@media (max-width: 480px) {
+  .scroll-card {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+    bottom: 12px;
+  }
+}
+
+/* Landing overlay (keeps fullscreen behavior) */
+#landing {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* restored original landing background */
+  background-image: url("assets/landing-bg2.jpg");
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+  transition: opacity 600ms ease;
+}
+
+/* landing inner content */
+.landing-inner {
+  margin-top: 100px;
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 24px;
+  flex: 1 1 auto;
+}
+#landing-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+#landing-logo-img {
+  display: block;
+  /* bigger, but responsive: maximum 480px or 80% of container */
+  width: min(70%);
+  height: auto;
+  margin: 0 auto;
+}
+
+.landing-left {
+  /* restore panel sizing so the two columns actually take space */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex: 1 1 0;
+  min-width: 260px;
+}
+
+.landing-right {
+  margin-left: 0;
+  transform: none;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* center content in right column */
+}
+
+/* center and constrain the hero GIF */
+.landing-hero {
+  display: block;
+  margin: 0 auto;
+  width: min(420px, 65%); /* responsive width with a sensible max */
+  max-width: 420px;
+  height: auto;
+  transform: scaleX(-1); /* keep the original flip if desired */
+  backface-visibility: hidden;
+}
+
+/* ensure GIF is smaller on very small screens */
+@media (max-width: 640px) {
+  .landing-hero {
+    max-width: 320px;
+    width: 60vw;
+  }
+}
+
+/* landing panels: keep simple constraints (layout via Tailwind) */
+.landing-panels {
+  max-width: 1200px;
+  padding: 24px;
+  box-sizing: border-box;
+  gap: 32px;
+}
+
+/* logo panel helpers */
+.logo-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.logo-left {
+  justify-content: center;
+  align-items: flex-start;
+  text-align: left;
+}
+.logo-center {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.logo-right {
+  justify-content: center;
+  align-items: flex-end;
+  text-align: right;
+}
+
+/* vertical control */
+.logo-top {
+  align-items: flex-start;
+}
+.logo-middle {
+  align-items: center;
+}
+.logo-bottom {
+  align-items: flex-end;
+}
+
+/* hero panel helpers */
+.hero-panel {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+.hero-left {
+  justify-content: flex-start;
+}
+.hero-center {
+  justify-content: center;
+}
+.hero-right {
+  justify-content: flex-end;
+}
+
+.hero-top {
+  align-items: flex-start;
+}
+.hero-middle {
+  align-items: center;
+}
+.hero-bottom {
+  align-items: flex-end;
+}
+
+/* quick offset tweaks via CSS variables */
+.logo-offset {
+  transform: translate(var(--x, 0), var(--y, 0));
+}
+.hero-offset {
+  transform: translate(var(--x, 0), var(--y, 0));
+}
+
+/* Optional: small spacing niceties */
+.landing-cta {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 3rem; /* push buttons down; tweak as needed */
+}
+
+/* Enter button */
+.enter-btn {
+  -webkit-appearance: none;
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0; /* override previous rule */
+  background-color: #000000;
+  color: #fff !important;
+  border: none;
+  border-radius: 4px;
+  width: 120px;
+  height: 32px;
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+.read-btn {
+  -webkit-appearance: none;
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0; /* override previous rule */
+  background-color: rgba(255, 255, 255, 0.55);
+  /* border: 1.5px solid rgba(255, 255, 255, 0.55); */
+  color: #000000 !important;
+  border-radius: 4px;
+  width: 120px;
+  height: 32px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+:root {
+  --overlay-width: min(900px, 94vw);
+  --left-col: 60%;
+  --map-max: 560px;
+  --device-max: 320px;
+  --panel-gap: 20px;
+  --text-max: 46rem;
+  --muted-text: rgba(255, 255, 255, 0.9);
+  --heading: rgba(255, 255, 255, 0.95);
+}
+
+/* small portrait used in the left column */
+.wb-img {
+  width: 100%;
+  max-width: 120px;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-bottom: 12px;
+}
+
+/* ensure images inside .wb-image sit side-by-side */
+.wb-image {
+  display: flex;
+  flex-direction: row;
+  gap: 12px; /* space between images */
+  align-items: flex-start; /* align tops */
+  flex-wrap: wrap; /* allows stacking on narrow screens */
+}
+
+/* make each image keep its intrinsic aspect and not stretch the column */
+.wb-image .wb-img {
+  width: auto;
+  max-width: 160px; /* adjust to preferred thumbnail size */
+  margin-bottom: 0;
+}
+
+#ledger {
+  max-width: 280px;
+}
+
+/* responsive: stack vertically on small viewports */
+@media (max-width: 640px) {
+  .wb-image {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .wb-image .wb-img {
+    max-width: 100%;
+  }
+}
+
+/* overlay container */
+.project-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.18);
+  z-index: 9999;
+  padding: 24px;
+  transition: opacity 220ms, visibility 220ms;
+}
+.project-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* panel */
+.project-panel {
+  width: var(--overlay-width);
+  max-height: 90vh;
+  overflow: auto;
+  padding: 32px;
+  border-radius: 10px;
+  background: rgba(12, 12, 12, 0.72);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: var(--muted-text);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* two-column grid: left = portrait + text, right = map/device */
+.project-grid {
+  display: grid;
+  grid-template-columns: var(--left-col) 1fr;
+  grid-template-rows: auto 1fr;
+  gap: var(--panel-gap);
+  align-items: start;
+}
+
+/* explicit placements */
+/* .wb-image {
+  grid-column: 1;
+  grid-row: 1;
+} */
+/* .panel-content {
+  grid-column: 1;
+  grid-row: 2;
+  max-width: var(--text-max);
+} */
+.panel-image {
+  display: flex;
+  align-items: flex-start; /* align to top of text */
+  justify-content: flex-end; /* keep device/map to the right */
+}
+
+/* prevent physiognotrace from stretching to 100% of the column */
+.panel-image .overlay-img {
+  flex: 0 0 auto; /* do not grow/shrink in the flex row */
+  max-width: 280px; /* <-- reduce to desired size */
+  height: auto;
+  object-fit: contain;
+  align-self: flex-start;
+}
+
+/* typography */
+.project-panel h2 {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+  color: var(--heading);
+}
+.project-panel p {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--muted-text);
+}
+
+.project-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* mobile: stack exactly image -> text -> map */
+@media (max-width: 900px) {
+  .project-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+  .wb-image {
+    grid-row: 1;
+  }
+  .panel-content {
+    grid-row: 2;
+  }
+  .panel-image {
+    grid-row: 3;
+    align-items: center;
+    margin-top: 12px;
+  }
+  .wb-img {
+    max-width: 200px;
+  }
+  .panel-image .overlay-img,
+  .panel-image .overlay-map {
+    max-width: 100%;
+  }
+}
+.panel-footer {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.landing {
+  display: flex;
+  flex-direction: column;
+  min-height: 70vh;
+}
+
+/* Let the main content fill available space */
+.landing-inner {
+  flex: 1 1 auto;
+}
+
+.landing-credit {
+  margin-top: auto; /* pushes this element to the bottom of .landing */
+  padding: 0.75rem 1rem; /* breathing room */
+  text-align: center;
+  width: 100%;
+  color: #ddd; /* tweak as desired */
+  font-size: 0.9rem;
+}
+
+.legend-icon.icon-men {
+  display: inline-block;
+  width: 70px;
+  height: 70px;
+  background-color: currentColor; /* the icon’s color */
+  -webkit-mask: url("assets/icon-men.svg") no-repeat center / contain;
+  mask: url("assets/icon-men.svg") no-repeat center / contain;
+}
+
+.legend-icon.icon-women {
+  display: inline-block;
+  width: 70px;
+  height: 70px;
+  background-color: currentColor; /* the icon’s color */
+  -webkit-mask: url("assets/icon-women.svg") no-repeat center / contain;
+  mask: url("assets/icon-women.svg") no-repeat center / contain;
+}
+
+@media (min-width: 200px) and (max-width: 400px) {
+  .legend-icon.icon-men,
+  .legend-icon.icon-women,
+  .legend-icon.icon-children {
+    width: 10vw;
+    height: 10vw;
+  }
+}
+
+.legend-icon.icon-children {
+  display: inline-block;
+  width: 70px;
+  height: 70px;
+  background-color: currentColor;
+  -webkit-mask: url("assets/icon-children.svg") no-repeat center / contain;
+  mask: url("assets/icon-children.svg") no-repeat center / contain;
+}
+/* default (inactive) button color */
+.legend-btn {
+  color: #ffffff;
+}
+
+/* active button color — icons inherit via currentColor */
+.legend-btn.active,
+button.legend-btn.active {
+  color: #e5d3b5;
+}
+
+/* fallback / extra specificity for icon element if needed */
+button#children.active .legend-icon.icon-children,
+button#men.active .legend-icon.icon-men,
+button#women.active .legend-icon.icon-women,
+button#identified.active .legend-icon.icon-identified,
+button#politics.active .legend-icon.icon-politics {
+  background-color: currentColor;
+}
+
+@media (max-width: 640px) {
+  .landing {
+    min-height: 56vh;
+  }
+  .landing-credit {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* small responsive tweaks that Tailwind may not cover exactly */
+@media (max-width: 900px) {
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+  .panel-image {
+    grid-column: 1;
+    justify-self: center;
+    order: -1;
+  }
+  .panel-image img {
+    width: 100%;
+    max-height: 220px;
+  }
+  .panel-footer {
+    justify-content: center;
+  }
+
+  /* landing adjustments */
+  .landing-panels {
+    padding: 0 8px;
+    max-width: 98vw;
+    gap: 24px;
+  }
+  #landing-logo-img,
+  .landing-hero {
+    width: 60vw;
+    max-width: 90vw;
+  }
+  .landing-hero {
+    display: none;
+  } /* hide gif on small screens */
+
+  /* responsive: reduce logo size and spacing on small screens */
+  #landing-logo-img {
+    width: min(320px, 70vw);
+  }
+  .landing-cta {
+    margin-top: 1rem;
+    gap: 0.5rem;
+  }
+}
+/* small responsive tweaks */
+@media (prefers-reduced-motion: reduce) {
+  .carousel-image-collection,
+  .carousel-image-container img {
+    transition: none;
+  }
+}
+
+/* Responsive: make select smaller on tight widths */
+@media (max-width: 640px) {
+  #filter {
+    min-width: 120px;
+    padding-right: 34px;
+    font-size: 13px;
+  }
+}
+
+/* reduce the offset on small screens */
+@media (max-width: 640px) {
+  #gallery {
+    --gallery-top-offset: 40px;
+  }
+}
+
+/* ensure large-gallery images are responsive on small devices */
+@media (max-width: 900px) {
+  .large-gallery img {
+    max-width: 98vw;
+    max-height: 60vh;
+    margin: 0 4vw;
+  }
+}
+
+/* small visual tweak for carousel buttons on narrow screens */
+@media (max-width: 600px) {
+  .carousel-prev,
+  .carousel-next {
+    font-size: 1.6rem;
+    height: 48px;
+    width: 40px;
+    padding: 6px 10px;
+  }
+}
+
+/* Landing layout control utilities moved from index.html */
+
+.layout-control {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "logo"
+    "hero";
+  gap: 1.5rem;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .layout-control {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: "logo hero";
+  }
+
+  .layout-control .landing-left {
+    grid-area: logo;
+  }
+  .layout-control .landing-right {
+    grid-area: hero;
+  }
+}
+
+/* subheading styles */
+.landing-subheading {
+  margin-top: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.05rem;
+  font-weight: 300;
+  line-height: 1.3;
+  max-width: 760px;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 12px;
+}
+
+/* slightly smaller on narrow screens */
+@media (max-width: 640px) {
+  .landing-subheading {
+    font-size: 0.95rem;
+    margin-top: 8px;
+  }
+}

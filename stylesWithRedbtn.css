@@ -1,0 +1,1054 @@
+/* ---------------------------------------------------
+   Base / Reset
+--------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --overlay-width: min(900px, 94vw);
+  --left-col: 60%;
+  --map-max: 560px;
+  --device-max: 320px;
+  --panel-gap: 20px;
+  --text-max: 46rem;
+  --muted-text: rgba(255, 255, 255, 0.9);
+  --heading: rgba(255, 255, 255, 0.95);
+}
+
+body {
+  margin: 0;
+  padding: 24px;
+  background-image: url("assets/tile.png");
+  background-color: #ffffff;
+  background-repeat: repeat;
+  background-position: top left;
+}
+
+/* optional white background helper */
+.bg {
+  background-color: #ffffff;
+}
+
+/* utility helpers */
+.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 180ms ease, visibility 180ms ease;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------
+   Sticky Header / Global Layout
+--------------------------------------------------- */
+
+#sticky-header {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  width: 100%;
+  z-index: 9998;
+  background-color: #000000 !important;
+  box-sizing: border-box;
+  padding: 12px 24px;
+}
+
+/* offset content so it doesn't hide behind sticky header */
+main,
+.content,
+#gallery {
+  margin-top: 56px;
+}
+
+/* Headline / logo */
+.headline {
+  display: block;
+}
+
+#headline .headline-img,
+.headline .headline-img {
+  display: block;
+  max-width: 55%;
+  height: auto;
+  margin-left: 10px;
+  padding: 8px 0;
+}
+
+/* ---------------------------------------------------
+   Buttons / Form Controls
+--------------------------------------------------- */
+
+/* shared primary button styles for gallery + header */
+/* shared base button styles */
+.create-btn,
+.view-btn {
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 10px 18px;
+  background-color: rgba(98, 98, 98, 0.35);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.65rem;
+  font-weight: 600;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  gap: 4px;
+}
+
+/* floating “Create a silhouette” button */
+.create-btn {
+  -webkit-appearance: none;
+  appearance: none;
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 10010;
+  padding: 10px 18px;
+  background-color: #b91c1c; /* red */
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  text-transform: none;
+}
+
+/* plus icon before the text */
+.create-btn::before {
+  content: "+";
+  display: inline-block;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* make sure link inside inherits styles (your HTML has <a> inside the button) */
+.create-btn a {
+  color: inherit;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* keep view/trace as normal inline header buttons */
+.view-btn {
+  position: static;
+}
+
+.view-btn img {
+  display: block;
+  width: 18px;
+  height: auto;
+  padding-right: 4px;
+  flex-shrink: 0; /* don’t let the icon collapse */
+}
+
+/* landing CTA buttons */
+.enter-btn,
+.read-btn {
+  -webkit-appearance: none;
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  width: 120px;
+  height: 32px;
+  font-size: 0.85rem;
+  font-weight: 400;
+  border: none;
+}
+
+.enter-btn {
+  background-color: #000000;
+  color: #ffffff !important;
+}
+
+.read-btn {
+  background-color: rgba(255, 255, 255, 0.55);
+  color: #000000 !important;
+  font-weight: 700;
+}
+
+/* select filter in header */
+#filter {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  display: inline-block;
+  min-width: 160px;
+  padding: 8px 38px 8px 12px; /* room for arrow on right */
+  font-size: 14px;
+  color: #ffffff;
+  background-color: rgba(98, 98, 98, 0.35);
+  border-radius: 4px;
+  line-height: 1.2;
+  cursor: pointer;
+  box-shadow: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path d='M6 8l4 4 4-4' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px 16px;
+}
+
+/* generic close button style (used in overlays / large gallery) */
+.close-btn {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 100020;
+  padding: 8px 12px;
+  background: #ffffff;
+  color: #111111;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* close button when nested inside .large-gallery panel */
+.large-gallery .close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10010;
+}
+
+/* focus states */
+.carousel-prev:focus,
+.carousel-next:focus,
+.close-btn:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.22);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------
+   Gallery Grid & Thumbnails
+--------------------------------------------------- */
+
+#gallery {
+  width: 100%;
+  padding-bottom: 20px;
+  display: grid; /* fallback if Tailwind grid classes are absent */
+  gap: 0.5rem;
+  --gallery-top-offset: 20px;
+  padding-top: var(--gallery-top-offset);
+}
+
+/* make each gallery cell square */
+#gallery > * {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* image fill behavior */
+#gallery > * img,
+#gallery > .gallery-item img,
+.gallery-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* selection outline */
+.gallery-item.selected,
+.col.selected {
+  outline: 3px solid rgb(190, 0, 0);
+  z-index: 2;
+}
+
+/* ---------------------------------------------------
+   Large Gallery / Carousel
+--------------------------------------------------- */
+
+/* full-screen overlay */
+.large-gallery {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 9999;
+  backdrop-filter: blur(6px) saturate(90%);
+}
+
+/* main container inside overlay */
+.large-gallery .carousel-outer {
+  width: min(92vw, 1100px);
+  max-width: 1100px;
+  max-height: 90vh;
+  box-sizing: border-box;
+  background: rgba(255, 252, 223, 0.96);
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 40px 80px rgba(2, 6, 23, 0.65), 0 8px 24px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  position: relative;
+  overflow: hidden;
+}
+
+/* morph / trace button in large gallery */
+#large-gallery .morph-btn,
+#large-gallery #lightbox-morph-btn {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: #ffffff;
+  color: #111111;
+  display: inline-block;
+}
+
+/* carousel base layout */
+.carousel-outer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.carousel-image-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.large-gallery .carousel-image-area {
+  width: 100%;
+  max-height: calc(90vh - 90px);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.carousel-image-collection {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+/* image container with overlay silhouette */
+.carousel-image-container {
+  position: relative;
+  display: inline-block;
+  max-width: 900px;
+  max-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 16px;
+  z-index: 0;
+}
+
+/* base image (hidden on hover to reveal silhouette) */
+.carousel-image-container .carousel-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 900px;
+  max-height: 90vh;
+  object-fit: contain;
+  position: relative;
+  transition: opacity 0.085s ease;
+}
+
+/* hide base image on hover / focus */
+.carousel-image-container:hover > img.carousel-img,
+.carousel-image-container:focus-within > img.carousel-img {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+}
+
+/* overlay silhouette image */
+.carousel-image-container .silo-img {
+  position: absolute;
+  top: -24px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 900px;
+  max-height: 90vh;
+  border-radius: 16px;
+  object-fit: contain;
+  z-index: 4;
+  visibility: visible;
+  transition: filter 220ms ease, opacity 200ms ease;
+}
+
+/* tint effect on hover */
+.carousel-image-container:hover .silo-img,
+.carousel-image-container:focus-within .silo-img {
+  filter: invert(100%) sepia(10%) saturate(600%) hue-rotate(45deg) brightness(1);
+}
+
+/* optional caption */
+.carousel-caption {
+  max-width: 360px;
+  margin-top: 12px;
+  color: #000000;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+/* carousel arrows */
+.carousel-prev,
+.carousel-next {
+  background: #ffffff;
+  color: #222222;
+  border: none;
+  font-size: 2rem;
+  padding: 8px 12px;
+  cursor: pointer;
+  z-index: 10001;
+  opacity: 0.9;
+  margin: 0 8px;
+  height: 56px;
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------------------------------------------------
+   Scroll Card (bottom helper text)
+--------------------------------------------------- */
+
+.scroll-card {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%) translateY(100%);
+  opacity: 0;
+  transition: transform 0.28s ease, opacity 0.28s ease;
+  background: rgba(12, 12, 12, 0.92);
+  color: #ffffff;
+  padding: 12px 16px;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+  z-index: 9000;
+  max-width: calc(100% - 40px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.95rem;
+  pointer-events: auto;
+}
+
+.scroll-card.visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* ---------------------------------------------------
+   Landing Page (index.html)
+--------------------------------------------------- */
+
+.landing {
+  display: flex;
+  flex-direction: column;
+  min-height: 70vh;
+}
+
+.landing-inner {
+  flex: 1 1 auto;
+}
+
+#landing {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url("assets/landing-bg2.jpg");
+  background-size: cover;
+  background-position: center;
+  color: #ffffff;
+  transition: opacity 600ms ease;
+}
+
+.landing-panels {
+  max-width: 1200px;
+  padding: 24px;
+  box-sizing: border-box;
+  gap: 32px;
+}
+
+.landing-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex: 1 1 0;
+  min-width: 260px;
+}
+
+.landing-right {
+  margin-left: 0;
+  transform: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* logo block */
+#landing-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#landing-logo-img {
+  display: block;
+  width: min(70%, 480px);
+  height: auto;
+  margin: 0 auto;
+}
+
+/* hero GIF */
+.landing-hero {
+  display: block;
+  margin: 0 auto;
+  width: min(420px, 65%);
+  max-width: 420px;
+  height: auto;
+  transform: scaleX(-1);
+  backface-visibility: hidden;
+}
+
+/* CTA buttons container */
+.landing-cta {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+/* landing subheading text */
+.landing-subheading {
+  margin-top: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.05rem;
+  font-weight: 300;
+  line-height: 1.3;
+  max-width: 760px;
+  text-align: center;
+  margin-inline: auto;
+  padding: 0 12px;
+}
+
+/* layout-control grid switches logo/hero order */
+.layout-control {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "logo"
+    "hero";
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.landing-credit {
+  margin-top: auto;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  width: 100%;
+  color: #dddddd;
+  font-size: 0.9rem;
+}
+
+/* logo alignment helpers */
+.logo-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.logo-left {
+  justify-content: center;
+  align-items: flex-start;
+  text-align: left;
+}
+.logo-center {
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.logo-right {
+  justify-content: center;
+  align-items: flex-end;
+  text-align: right;
+}
+.logo-top {
+  align-items: flex-start;
+}
+.logo-middle {
+  align-items: center;
+}
+.logo-bottom {
+  align-items: flex-end;
+}
+
+/* hero alignment helpers */
+.hero-panel {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+.hero-left {
+  justify-content: flex-start;
+}
+.hero-center {
+  justify-content: center;
+}
+.hero-right {
+  justify-content: flex-end;
+}
+.hero-top {
+  align-items: flex-start;
+}
+.hero-middle {
+  align-items: center;
+}
+.hero-bottom {
+  align-items: flex-end;
+}
+
+/* offset tweakers (set via CSS vars in HTML if needed) */
+.logo-offset {
+  transform: translate(var(--x, 0), var(--y, 0));
+}
+.hero-offset {
+  transform: translate(var(--x, 0), var(--y, 0));
+}
+
+/* ---------------------------------------------------
+   Project Overlay ("Read More" panel)
+--------------------------------------------------- */
+
+.project-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.18);
+  z-index: 9999;
+  padding: 24px;
+  transition: opacity 220ms, visibility 220ms;
+}
+
+.project-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* overlay panel */
+.project-panel {
+  width: var(--overlay-width);
+  max-height: 90vh;
+  overflow: auto;
+  padding: 32px;
+  border-radius: 10px;
+  background: rgba(12, 12, 12, 0.72);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: var(--muted-text);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* two-column content */
+.project-grid {
+  display: grid;
+  grid-template-columns: var(--left-col) 1fr;
+  grid-template-rows: auto 1fr;
+  gap: var(--panel-gap);
+  align-items: start;
+}
+
+/* small portrait images in left column */
+.wb-img {
+  width: 100%;
+  max-width: 120px;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-bottom: 12px;
+}
+
+/* cluster images side-by-side */
+.wb-image {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.wb-image .wb-img {
+  width: auto;
+  max-width: 160px;
+  margin-bottom: 0;
+}
+
+#ledger {
+  max-width: 280px;
+}
+
+/* right column image (physiognotrace device) */
+.panel-image {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.panel-image .overlay-img {
+  flex: 0 0 auto;
+  max-width: 280px;
+  height: auto;
+  object-fit: contain;
+  align-self: flex-start;
+}
+
+/* overlay typography */
+.project-panel h2 {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+  color: var(--heading);
+}
+
+.project-panel p {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--muted-text);
+}
+
+.project-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.panel-footer {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* header legend + controls container */
+#legend-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* make legend icons a compact row to save horizontal space */
+#legend-top .legend-btn {
+  padding: 0;
+  background: transparent;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* keep icon size reasonable */
+#legend-top .legend-icon {
+  width: 36px;
+  height: 36px;
+}
+
+/* ---------------------------------------------------
+   Legend Icons (gender / category filters)
+--------------------------------------------------- */
+
+.legend-icon {
+  display: inline-block;
+  width: 70px;
+  height: 70px;
+  background-color: currentColor;
+}
+
+.legend-icon.icon-men {
+  -webkit-mask: url("assets/icon-men.svg") no-repeat center / contain;
+  mask: url("assets/icon-men.svg") no-repeat center / contain;
+}
+
+.legend-icon.icon-women {
+  -webkit-mask: url("assets/icon-women.svg") no-repeat center / contain;
+  mask: url("assets/icon-women.svg") no-repeat center / contain;
+}
+
+.legend-icon.icon-children {
+  -webkit-mask: url("assets/icon-children.svg") no-repeat center / contain;
+  mask: url("assets/icon-children.svg") no-repeat center / contain;
+}
+
+/* default button color */
+.legend-btn {
+  color: #ffffff;
+}
+
+/* active legend state */
+.legend-btn.active,
+button.legend-btn.active {
+  color: #e5d3b5;
+}
+
+/* extra specificity */
+button#children.active .legend-icon.icon-children,
+button#men.active .legend-icon.icon-men,
+button#women.active .legend-icon.icon-women,
+button#identified.active .legend-icon.icon-identified,
+button#politics.active .legend-icon.icon-politics {
+  background-color: currentColor;
+}
+
+/* ---------------------------------------------------
+   Responsive Tweaks
+--------------------------------------------------- */
+
+/* small phones */
+@media (max-width: 480px) {
+  .scroll-card {
+    font-size: 0.9rem;
+    padding: 10px 12px;
+    bottom: 12px;
+  }
+}
+
+/* up to small tablets */
+@media (max-width: 640px) {
+  .landing {
+    min-height: 56vh;
+  }
+
+  .landing-credit {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .landing-hero {
+    max-width: 320px;
+    width: 60vw;
+  }
+
+  .landing-subheading {
+    font-size: 0.95rem;
+    margin-top: 8px;
+  }
+
+  .landing-cta {
+    margin-top: 1rem;
+    gap: 0.5rem;
+  }
+
+  .landing-panels {
+    padding: 0 8px;
+    max-width: 98vw;
+    gap: 24px;
+  }
+
+  #landing-logo-img {
+    width: min(320px, 70vw);
+  }
+
+  /* filter select */
+  #filter {
+    min-width: 120px;
+    padding-right: 34px;
+    font-size: 13px;
+  }
+
+  /* gallery offset slightly larger on narrow screens */
+  #gallery {
+    --gallery-top-offset: 40px;
+  }
+
+  /* stack project overlay images */
+  .wb-image {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .wb-image .wb-img {
+    max-width: 100%;
+  }
+}
+
+/* medium screens / tablets */
+@media (max-width: 900px) {
+  /* project overlay stacks vertically */
+  .project-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+
+  .wb-image {
+    grid-row: 1;
+  }
+
+  .panel-content {
+    grid-row: 2;
+  }
+
+  .panel-image {
+    grid-row: 3;
+    align-items: center;
+    margin-top: 12px;
+    justify-self: center;
+  }
+
+  .wb-img {
+    max-width: 200px;
+  }
+
+  .panel-image .overlay-img,
+  .panel-image .overlay-map {
+    max-width: 100%;
+  }
+
+  .panel-image img {
+    width: 100%;
+    max-height: 220px;
+  }
+
+  .panel-footer {
+    justify-content: center;
+  }
+
+  /* large gallery images scale to viewport */
+  .large-gallery img {
+    max-width: 98vw;
+    max-height: 60vh;
+    margin: 0 4vw;
+  }
+
+  /* MOBILE LAYOUT:
+   - stack filter + view/trace
+   - put legend icons on their own row under them
+*/
+  @media (max-width: 640px) {
+    #legend-top {
+      justify-content: flex-start;
+      align-items: stretch;
+      gap: 0.35rem;
+    }
+
+    /* filter takes full width */
+    #legend-top #filter {
+      width: 100%;
+      max-width: 260px;
+    }
+
+    /* view & trace stacked, full width */
+    #legend-top .view-btn {
+      width: 100%;
+      max-width: 260px;
+      justify-content: center;
+    }
+
+    /* legend icons row drops below as a compact bar */
+    #legend-top .legend-btn {
+      flex: 0 0 auto;
+      transform: scale(0.9);
+    }
+  }
+
+  /* prevent the button text from crushing the icon on tiny screens */
+  @media (max-width: 480px) {
+    .view-btn {
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  /* hide hero GIF on smallish screens if needed */
+  .landing-hero {
+    display: none;
+  }
+}
+
+/* fine-tune carousel arrows on very narrow screens */
+@media (max-width: 600px) {
+  .carousel-prev,
+  .carousel-next {
+    font-size: 1.6rem;
+    height: 48px;
+    width: 40px;
+    padding: 6px 10px;
+  }
+}
+
+/* landing layout: switch to two columns on md+ */
+@media (min-width: 768px) {
+  .layout-control {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: "logo hero";
+  }
+
+  .layout-control .landing-left {
+    grid-area: logo;
+  }
+
+  .layout-control .landing-right {
+    grid-area: hero;
+  }
+}
+
+/* legend icons shrink on very small widths */
+@media (min-width: 200px) and (max-width: 400px) {
+  .legend-icon.icon-men,
+  .legend-icon.icon-women,
+  .legend-icon.icon-children {
+    width: 10vw;
+    height: 10vw;
+  }
+}
+
+/* motion reduction */
+@media (prefers-reduced-motion: reduce) {
+  .carousel-image-collection,
+  .carousel-image-container img {
+    transition: none;
+  }
+}
