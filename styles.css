@@ -49,17 +49,6 @@ body {
    Sticky Header / Global Layout
 --------------------------------------------------- */
 
-#sticky-header {
-  position: fixed;
-  inset-inline: 0;
-  top: 0;
-  width: 100%;
-  z-index: 9998;
-  background-color: #000000 !important;
-  box-sizing: border-box;
-  padding: 12px 24px;
-}
-
 /* offset content so it doesn't hide behind sticky header */
 main,
 .content,
@@ -70,168 +59,6 @@ main,
 /* Headline / logo */
 .headline {
   display: block;
-}
-
-/* #headline .headline-img,
-.headline .headline-img {
-  display: block;
-  width: 360px;
-  max-width: 100%;
-  height: auto;
-  margin-left: 10px;
-  padding: 8px 0;
-} */
-
-/* force same small, left-aligned logo on gallery + selfie */
-#sticky-header .headline {
-  display: flex;
-  align-items: center; /* vertically center logo inside the sticky header */
-  justify-content: flex-start;
-  padding: 0;
-}
-
-#sticky-header .headline img.headline-img,
-#sticky-header img#selfie-logo,
-#sticky-header img#site-logo {
-  width: 240px !important; /* fixed size used everywhere — change to taste */
-  height: auto;
-  margin-left: 10px; /* left offset inside header */
-  max-width: none !important; /* prevent % rules from scaling it */
-  display: block;
-}
-
-/* make sure no other rule overrides it */
-/* img#site-logo,
-img#selfie-logo,
-img#landing-logo-img {
-  max-width: none !important;
-} */
-
-/* ---------------------------------------------------
-   Top Controls: Filter, View/Trace, Gender Legend
---------------------------------------------------- */
-
-/* container from gallery.html */
-#legend-top {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  flex-wrap: nowrap; /* keep a single horizontal row on wide screens */
-}
-#legend-top {
-  gap: 0.5rem;
-}
-
-.icon-group {
-  gap: 0rem;
-}
-
-.legend-icon {
-  width: 52px;
-  height: 52px;
-}
-
-/* filter select */
-#filter,
-.legend-select-mobile {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  display: inline-block;
-  min-width: 145px;
-  padding: 8px 38px 8px 12px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #000;
-  background-color: #c2af8e;
-  border-radius: 4px;
-  line-height: 1.2;
-  cursor: pointer;
-  box-shadow: none;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path d='M6 8l4 4 4-4' stroke='%23000000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 16px 16px;
-  border: none;
-}
-
-/* gender dropdown: hidden by default, shown only on small screens */
-.legend-select-mobile {
-  display: none;
-}
-
-/* view / trace buttons */
-.view-btn {
-  padding: 8px 14px;
-  background-color: rgba(98, 98, 98, 0.35);
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.7rem;
-  font-weight: 600;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  height: auto;
-}
-
-.view-btn img {
-  width: 18px;
-  height: auto;
-  padding-right: 4px;
-  flex-shrink: 0;
-}
-
-/* gender legend icon buttons */
-.legend-btn {
-  color: #ffffff;
-  background: transparent;
-  border: none;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* icon shapes */
-.legend-icon {
-  display: inline-block;
-  width: 70px;
-  height: 70px;
-  background-color: currentColor;
-}
-
-.legend-icon.icon-men {
-  -webkit-mask: url("assets/icon-men.svg") no-repeat center / contain;
-  mask: url("assets/icon-men.svg") no-repeat center / contain;
-}
-
-.legend-icon.icon-women {
-  -webkit-mask: url("assets/icon-women.svg") no-repeat center / contain;
-  mask: url("assets/icon-women.svg") no-repeat center / contain;
-}
-
-.legend-icon.icon-children {
-  -webkit-mask: url("assets/icon-children.svg") no-repeat center / contain;
-  mask: url("assets/icon-children.svg") no-repeat center / contain;
-}
-
-/* active button color — icons inherit via currentColor */
-.legend-btn.active,
-button.legend-btn.active {
-  color: #e5d3b5;
-}
-
-button#children.active .legend-icon.icon-children,
-button#men.active .legend-icon.icon-men,
-button#women.active .legend-icon.icon-women,
-button#identified.active .legend-icon.icon-identified,
-button#politics.active .legend-icon.icon-politics {
-  background-color: currentColor;
 }
 
 /* ---------------------------------------------------
@@ -940,52 +767,9 @@ button#politics.active .legend-icon.icon-politics {
     width: min(320px, 70vw);
   }
 
-  /* NARROW LAYOUT: phones + tablets + small laptops */
-  @media (max-width: 1200px) {
-    /* allow wrapping into two rows */
-    #legend-top {
-      justify-content: flex-start;
-      align-items: flex-start;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-    }
-
-    /* show gender dropdown instead of icons */
-    .legend-select-mobile {
-      display: inline-block;
-    }
-    #legend-top .legend-btn {
-      display: none;
-    }
-
-    /* dropdowns and buttons narrower (you already had these styles) */
-    #filter,
-    .legend-select-mobile {
-      min-width: 0;
-      width: 100%;
-      max-width: 145px;
-      padding: 6px 32px 6px 10px;
-      font-size: 13px;
-    }
-
-    .view-btn {
-      padding: 6px 10px;
-      font-size: 0.65rem;
-      max-width: 260px;
-      justify-content: center;
-    }
-
-    /* Gallery page only: lock logo to one size */
-    .gallery-page #headline .headline-img,
-    .gallery-page .headline .headline-img {
-      width: 25vw; /* or whatever fixed width you like */
-      max-width: 25vw; /* remove responsive scaling */
-      height: auto;
-    }
-    /* any other “mobile” bits you like, e.g. gallery offset, stacking images, etc. */
-    #gallery {
-      --gallery-top-offset: 40px;
-    }
+  /* any other “mobile” bits you like, e.g. gallery offset, stacking images, etc. */
+  #gallery {
+    --gallery-top-offset: 40px;
   }
 
   /* stack project overlay images */
@@ -1087,25 +871,5 @@ button#politics.active .legend-icon.icon-politics {
   .carousel-image-collection,
   .carousel-image-container img {
     transition: none;
-  }
-}
-
-/* When the viewport gets narrower: shrink dropdowns + buttons together */
-@media (max-width: 1200px) {
-  /* Let the row wrap but keep the header compact and tight */
-  #legend-top {
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    gap: 0.35rem;
-  }
-
-  /* Shared scaling for dropdowns + buttons */
-  #legend-top #filter,
-  #legend-top .legend-select-mobile,
-  #legend-top .view-btn {
-    min-width: 0; /* allow them to shrink */
-    padding: 4px 10px; /* smaller padding */
-    font-size: 0.65rem; /* smaller text */
-    flex: 0 0 auto; /* no weird stretching */
   }
 }
