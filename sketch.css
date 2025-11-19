@@ -1,0 +1,43 @@
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: none;
+  font-family: system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+svg {
+  width: min(80vmin, 900px);
+  height: auto;
+  display: block;
+}
+
+.hint {
+  position: fixed;
+  bottom: 10px;
+  left: 12px;
+  opacity: 0.7;
+  font-size: 12px;
+}
+
+.content-wrapper {
+  width: 100%;
+  max-width: 90rem;
+  padding: 2rem;
+}
+
+/* Keeps info next to SVG on large screens */
+.top-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .top-section {
+    grid-template-columns: 1fr;
+  }
+}

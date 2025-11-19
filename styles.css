@@ -61,10 +61,6 @@ main,
   display: block;
 }
 
-/* ---------------------------------------------------
-   Floating "Create your silhouette" button
---------------------------------------------------- */
-
 /* floating “Create your silhouette” button */
 .create-btn {
   -webkit-appearance: none;
@@ -77,7 +73,7 @@ main,
   background-color: rgba(220, 38, 38, 0.9); /* red with opacity */
   color: #ffffff;
   border: none;
-  border-radius: 9999px;
+  border-radius: 6px;
   cursor: pointer;
   font-size: 0.8rem;
   font-weight: 600;

@@ -6,10 +6,7 @@
     <title>Continuous Synced Silhouette Stroke — Dynamic Info Panel</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="sketch.css">
-    <!-- <style>
+    <style>
         body {
             margin: 0;
             min-height: 100vh;
@@ -53,7 +50,7 @@
                 grid-template-columns: 1fr;
             }
         }
-    </style> -->
+    </style>
 </head>
 
 <body>
@@ -111,13 +108,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/MorphSVGPlugin.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/DrawSVGPlugin.min.js"></script>
-
-
 
     <script>
 
-        gsap.registerPlugin(DrawSVGPlugin);
+
 
         window.addEventListener("load", async () => {
             const stage = document.getElementById("stage");
@@ -172,7 +166,7 @@
                 );
 
                 gsap.to(infoPanel, {
-                    opacity: 0, duration: 0.1, onComplete: () => {
+                    opacity: 0, duration: 1.5, onComplete: () => {
                         if (entry) {
                             infoTitle.textContent = entry.title || "Untitled silhouette";
                             infoName.textContent = entry.name ? `Name: ${entry.name}` : "";
@@ -243,9 +237,9 @@
                 current.setAttribute("d", ds[0].d);
                 const L = current.getTotalLength();
                 gsap.set(current, { strokeDasharray: L, strokeDashoffset: 0, opacity: 1, strokeOpacity: 1 });
-                gsap.set(next, { drawSVG: "0%" });
+                gsap.set(next, { opacity: 0, strokeOpacity: 1 });
 
-                const duration = 6;
+                const duration = 6.0;
 
                 const eraseStart = 0.05;
                 const eraseSpeed = 2.5;
@@ -258,13 +252,13 @@
                     const filename = ds[nextIndex].id;
 
                     // update info panel for the silhouette we are about to animate
-                    updateInfoPanel(ds[i].id);
+                    updateInfoPanel(filename);
 
                     next.setAttribute("d", dNext);
                     const lenNext = next.getTotalLength();
 
-                    // gsap.set(next, { strokeDasharray: lenNext, strokeDashoffset: lenNext, opacity: 1, strokeOpacity: 1 });
-                    // gsap.set(current, { strokeDasharray: lenNext, strokeDashoffset: 0, strokeOpacity: 1 });
+                    gsap.set(next, { strokeDasharray: lenNext, strokeDashoffset: lenNext, opacity: 1, strokeOpacity: 1 });
+                    gsap.set(current, { strokeDasharray: lenNext, strokeDashoffset: 0, strokeOpacity: 1 });
 
                     const tl = gsap.timeline({
                         defaults: { ease: "none" },
@@ -282,39 +276,38 @@
 
 
                     const proxy = { t: 0 };
+                    tl.to(proxy, {
+                        t: 1,
+                        duration,
+                        onUpdate: () => {
+                            const t = proxy.t;
+                            let nextOff = (1 - t) * lenNext;
+                            if (nextOff < EPS) nextOff = 0;
+                            next.style.strokeDashoffset = nextOff;
 
-                    tl.fromTo(current, { drawSVG: "0%" }, {
-                        // t: 1,
-                        duration, drawSVG: "100%"
-                        // onUpdate: () => {
-                        //     const t = proxy.t;
-                        //     let nextOff = (1 - t) * lenNext;
-                        //     if (nextOff < EPS) nextOff = 0;
-                        //     next.style.strokeDashoffset = nextOff;
+                            if (t > eraseStart) {
+                                const eraseProgress = Math.min((t - eraseStart) / (1 - eraseStart) * eraseSpeed, 1);
+                                let currOff = -eraseProgress * lenNext;
+                                if (Math.abs(currOff + lenNext) < EPS) currOff = -lenNext;
+                                current.style.strokeDashoffset = currOff;
+                                if (eraseProgress > 0.99) current.style.strokeOpacity = 0;
+                            } else {
+                                current.style.strokeDashoffset = 0;
+                                current.style.strokeOpacity = 1;
+                            }
 
-                        //     if (t > eraseStart) {
-                        //         const eraseProgress = Math.min((t - eraseStart) / (1 - eraseStart) * eraseSpeed, 1);
-                        //         let currOff = -eraseProgress * lenNext;
-                        //         if (Math.abs(currOff + lenNext) < EPS) currOff = -lenNext;
-                        //         current.style.strokeDashoffset = currOff;
-                        //         if (eraseProgress > 0.99) current.style.strokeOpacity = 0;
-                        //     } else {
-                        //         current.style.strokeDashoffset = 0;
-                        //         current.style.strokeOpacity = 1;
-                        //     }
-
-                        //     const fadeRatio = 0.35;
-                        //     if (t > fadeRatio) {
-                        //         const fadeProgress = (t - fadeRatio) / (1 - fadeRatio);
-                        //         current.style.opacity = 1 - fadeProgress;
-                        //     } else {
-                        //         current.style.opacity = 1;
-                        //     }
-                        // }
+                            const fadeRatio = 0.35;
+                            if (t > fadeRatio) {
+                                const fadeProgress = (t - fadeRatio) / (1 - fadeRatio);
+                                current.style.opacity = 1 - fadeProgress;
+                            } else {
+                                current.style.opacity = 1;
+                            }
+                        }
                     });
                 }
 
-                // updateInfoPanel(ds[0].id);
+                updateInfoPanel(ds[0].id);
                 cycle();
 
             } catch (err) {
