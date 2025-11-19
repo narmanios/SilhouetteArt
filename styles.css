@@ -835,6 +835,18 @@ main,
     width: 40px;
     padding: 6px 10px;
   }
+
+  .large-gallery .carousel-image-area {
+    width: 100%;
+    max-height: calc(90vh - 90px);
+    overflow: scroll;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 /* landing layout: switch to two columns on md+ */

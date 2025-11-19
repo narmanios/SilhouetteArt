@@ -548,12 +548,14 @@
 
     // Navigation controls
     $(".carousel-prev", lightbox).addEventListener("click", () => {
-      index = Math.max(0, index - 1);
+      index = Math.max(0, index - 3);
       show();
     });
 
     $(".carousel-next", lightbox).addEventListener("click", () => {
-      index = Math.min(Math.max(0, slides.length - 3), index + 1);
+      index = Math.min(Math.max(0, slides.length - 3), index + 3);
+      console.log("slides.length:", slides.length, "index:", index);
+
       show();
     });
 
@@ -563,6 +565,23 @@
       lightbox.innerHTML = "";
     });
   }
+
+
+    //Psuedo code/////////////////////////////////////////
+    // number of thumbnails selected to be captured as a length
+    //display thumbnails from 0(i)-3(i)
+    // on next button click, increment i by 3
+    // on prev button click, decrement i by 3
+
+    // numberThumbnails = slides.length;
+    // let i = 0; 
+
+    // if (numberThumbnails <= 3) {
+
+  // const prevBtn = $(".carousel-prev", lightbox);
+  
+
+  ////////////////////////////////////////////////////////
 
   // ----------------------------
   // Boot (load data + start app)
