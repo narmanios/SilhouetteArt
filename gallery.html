@@ -30,19 +30,13 @@
                 <a href="index.html">
                     <img src="assets/logo.svg" alt="Headline" class="headline-img">
                 </a>
+
             </div>
 
 
 
             <!-- SINGLE legend-top container -->
             <div id="legend-top">
-                <select id="filter" name="filter">
-                    <option value="all" selected>All silhouettes</option>
-                    <option value="unidentified">Unidentified</option>
-                    <option value="identified">Name Known</option>
-                    <option value="politics">Politics</option>
-                </select>
-
                 <!-- gender dropdown for small screens -->
                 <select class="legend-select-mobile" name="legend-mobile">
                     <option value="all" selected>All people</option>
@@ -50,13 +44,6 @@
                     <option value="women">Women</option>
                     <option value="children">Children</option>
                 </select>
-
-                <button id="view-btn" class="view-btn" title="Select">
-                    View Collection
-                </button>
-                <button id="morph-btn" class="view-btn" title="Morph">
-                    Trace
-                </button>
 
                 <div class="icon-group flex flex-row items-center space-x-0.25">
                     <button id="men" class="legend-btn" title="Men">
@@ -72,6 +59,30 @@
                         <span class="sr-only">Children</span>
                     </button>
                 </div>
+
+                <select id="filter" name="filter">
+                    <option value="all" selected>All silhouettes</option>
+                    <option value="unidentified">Unidentified</option>
+                    <option value="identified">Name Known</option>
+                    <option value="politics">Politics</option>
+                </select>
+
+
+
+                <button id="view-btn" class="view-btn" disabled title="Select">
+                    View Collection
+                </button>
+                <button id="morph-btn" class="view-btn" disabled title="Morph">
+                    Trace
+                </button>
+
+
+                <div>
+                    <button class="create-btn" title="create">
+                        <a href="selfie.html">Snap your Silo</a>
+                    </button>
+                </div>
+
             </div>
         </div>
 
@@ -99,11 +110,7 @@
             <div class="scroll-card-text">Your message here — replace this text.</div>
         </div>
 
-        <div>
-            <button class="create-btn" title="create">
-                <a href="selfie.html">Cast your Shadow</a>
-            </button>
-        </div>
+
 
         <script type="module" src="main.js"></script>
 

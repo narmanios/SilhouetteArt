@@ -397,12 +397,23 @@
   // Selection handling
   // ----------------------------
 
+  const viewCollection = $("#view-btn");
+  const morphCollection = $("#morph-btn");
+
   // Clicking a grid item toggles its "selected" state.
   function enableSelection() {
     if (!grid) return;
     grid.addEventListener("click", (e) => {
       const item = e.target.closest(".gallery-item");
       if (item) item.classList.toggle("selected");
+      const selectedImgs = $all(".gallery-item.selected img");
+      if (selectedImgs.length === 0) {
+        if (viewCollection) viewCollection.setAttribute("disabled", "true");
+        if (morphCollection) morphCollection.setAttribute("disabled", "true");
+      } else {
+        if (viewCollection) viewCollection.removeAttribute("disabled");
+        if (morphCollection) morphCollection.removeAttribute("disabled");
+      }
     });
   }
 
@@ -504,7 +515,9 @@
       <button class="close-btn" aria-label="Close carousel">Close</button>
       <div class="carousel-outer" role="dialog" aria-modal="true">
         <button class="carousel-prev" aria-label="Previous">&#8592;</button>
-        <div class="carousel-image-area"></div>
+        
+                <div class="scroll-container"><div class="item-container"><div class="carousel-image-area"></div></div></div>
+
         <button class="carousel-next" aria-label="Next">&#8594;</button>
       </div>
     `;
@@ -566,20 +579,18 @@
     });
   }
 
+  //Psuedo code/////////////////////////////////////////
+  // number of thumbnails selected to be captured as a length
+  //display thumbnails from 0(i)-3(i)
+  // on next button click, increment i by 3
+  // on prev button click, decrement i by 3
 
-    //Psuedo code/////////////////////////////////////////
-    // number of thumbnails selected to be captured as a length
-    //display thumbnails from 0(i)-3(i)
-    // on next button click, increment i by 3
-    // on prev button click, decrement i by 3
+  // numberThumbnails = slides.length;
+  // let i = 0;
 
-    // numberThumbnails = slides.length;
-    // let i = 0; 
-
-    // if (numberThumbnails <= 3) {
+  // if (numberThumbnails <= 3) {
 
   // const prevBtn = $(".carousel-prev", lightbox);
-  
 
   ////////////////////////////////////////////////////////
 

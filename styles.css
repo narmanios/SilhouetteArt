@@ -56,43 +56,6 @@ main,
   margin-top: 56px;
 }
 
-/* Headline / logo */
-.headline {
-  display: block;
-}
-
-/* floating “Create your silhouette” button */
-.create-btn {
-  -webkit-appearance: none;
-  appearance: none;
-  position: fixed;
-  left: 16px;
-  bottom: 16px;
-  z-index: 10010;
-  padding: 10px 18px;
-  background-color: rgba(220, 38, 38, 0.9); /* red with opacity */
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-}
-
-/* if there's a link inside, make it inherit */
-.create-btn a {
-  color: inherit;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
 /* ---------------------------------------------------
    Gallery Grid & Thumbnails
 --------------------------------------------------- */
@@ -837,15 +800,31 @@ main,
   }
 
   .large-gallery .carousel-image-area {
-    width: 100%;
+    /* width: 100%; */
     max-height: calc(90vh - 90px);
     overflow: scroll;
-    display: flex;
+    display: grid;
     align-items: center;
     justify-content: center;
     gap: 20px;
-    display: flex;
-    flex-direction: column;
+    grid-auto-flow: column;
+    grid-template-columns: unset;
+    grid-auto-columns: 1fr;
+  }
+  .carousel-image-container {
+    width: 50vw;
+    scroll-snap-align: start;
+  }
+
+  .scroll-container {
+    position: relative;
+    overflow-x: scroll;
+    scrollbar-width: none;
+    scroll-snap-type: x mandatory;
+  }
+
+  .item-container {
+    min-width: fit-content;
   }
 }
 
