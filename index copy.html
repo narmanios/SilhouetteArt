@@ -36,6 +36,7 @@
                             <a href="gallery.html"><button id="enter-btn" class="enter-btn"
                                     type="button">Explore</button></a>
                             <button id="readmore-btn" class="read-btn" type="button">About</button>
+                            <button id="credit-btn" class="credit-btn" type="button">Credit</button>
 
                         </div>
                     </div>
@@ -86,33 +87,6 @@
                             This project invites one to explore these portraits not just as silhouettes but as a window
                             into the image of early America.</p>
 
-                        <p>This digital project is inspired by work supported through the Getty Foundation’s Paper
-                            Project initiative. It draws upon materials from the Smithsonian Institution’s Open Access
-                            collections, including the digitized ledger book of silhouette artist William Bache (ca.
-                            1803–1812) and his silhouette album held by the National Portrait Gallery. The Bache
-                            album containing over 1,800 cut-paper portraits of early nineteenth-century sitters was
-                            fully digitized thanks to Getty support and the National Portrait Gallery’s ongoing
-                            conservation and research efforts.</p>
-
-                        <p>Bache Album information: <a class="dataset-link"
-                                href="https://npg.si.edu/bache/">https://npg.si.edu/bache/</a></p>
-                        <p>
-                            In addition, this project utilises the Smithsonian Revolutionary Era Collections dataset, a
-                            curated subset of the Smithsonian’s Open Access corpus created by the Revolution Crossroads
-                            initiative. The dataset brings together 12,667 records and nearly 3,941 linked images of
-                            objects dating from 1770–1810, drawn from four Smithsonian museums: the National Museum of
-                            American History, the National Postal Museum, the Smithsonian American Art Museum, and the
-                            National Portrait Gallery.</p>
-
-                        <p>Dataset (CC0-1.0): <a class="dataset-link"
-                                href="https://huggingface.co/RevolutionCrossroads">https://huggingface.co/RevolutionCrossroads</a>
-                        </p>
-
-                        <p>
-                            Data visualization design by Neven Armanios. Silhouette outline visualization by Thiago
-                            Herson.</p>
-
-
                     </div>
                 </div>
 
@@ -128,47 +102,16 @@
             </div>
         </div>
 
+
+
+
+        <div class="landing-credit">
+            <p>Data and images courtesy of the Smithsonian Institution.<br>
+                Data visualization and design by Neven Armanios. Silhouette visualization by Thiago Herson.</p>
+        </div>
     </section>
 
-
-
     <script>
-
-        document.addEventListener("DOMContentLoaded", function () {
-            var overlay = document.getElementById("project-overlay-credits");
-            var openBtn = document.getElementById("credit-btn");
-            var closeBtn = document.getElementById("project-overlay-close");
-
-            if (!overlay || !openBtn) return;
-
-            function openOverlay(e) {
-                if (e) e.preventDefault();
-                overlay.classList.remove("hidden");
-                overlay.setAttribute("aria-hidden", "false");
-            }
-            function closeOverlay() {
-                overlay.classList.add("hidden");
-                overlay.setAttribute("aria-hidden", "true");
-            }
-
-            openBtn.addEventListener("click", openOverlay);
-            if (closeBtn) closeBtn.addEventListener("click", closeOverlay);
-
-            // click outside panel to close
-            overlay.addEventListener("click", function (e) {
-                if (e.target === overlay) closeOverlay();
-            });
-
-            // ESC to close
-            document.addEventListener("keydown", function (e) {
-                if (e.key === "Escape") closeOverlay();
-            });
-        });
-
-
-
-
-
         document.addEventListener("DOMContentLoaded", function () {
             var overlay = document.getElementById("project-overlay");
             var openBtn = document.getElementById("readmore-btn");

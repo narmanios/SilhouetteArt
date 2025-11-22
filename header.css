@@ -27,12 +27,12 @@
   position: relative;
   padding: 8px 14px;
   background-color: rgba(46, 46, 46, 0.9);
-  color: #ffffff;
+  color: #b3b3b3;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: 200;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -91,6 +91,7 @@
   min-width: 145px;
   padding: 8px 38px 8px 12px;
   font-size: 0.7rem;
+  font-weight: 600;
   color: #fff;
   background-color: rgb(174, 2, 2);
   border-radius: 4px;
@@ -137,7 +138,7 @@
 
 /* gender legend icon buttons */
 .legend-btn {
-  color: #ffffff;
+  color: #d7d7d7;
   background: transparent;
   border: none;
   padding: 0;
@@ -172,7 +173,7 @@
 /* active button color — icons inherit via currentColor */
 .legend-btn.active,
 button.legend-btn.active {
-  color: #e5d3b5;
+  color: #cab084;
 }
 
 button#children.active .legend-icon.icon-children,
