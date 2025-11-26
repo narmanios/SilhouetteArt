@@ -18,9 +18,24 @@
   display: flex;
   /* flex: 1; */
 }
+
+.headline-img {
+  transition: filter 0.3s ease;
+}
+
+.headline-img:hover {
+  filter: brightness(0) saturate(100%) invert(73%) sepia(17%) saturate(634%)
+    hue-rotate(358deg) brightness(93%) contrast(88%);
+}
+
+#headline:hover .headline-img {
+  filter: brightness(0) saturate(100%) invert(73%) sepia(17%) saturate(634%)
+    hue-rotate(358deg) brightness(93%) contrast(88%);
+}
 /* ---------------------------------------------------
    Top Controls: Filter, View/Trace, Gender Legend
 --------------------------------------------------- */
+
 .create-btn {
   -webkit-appearance: none;
   appearance: none;
@@ -58,6 +73,15 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
+}
+.create-btn:hover {
+  background-color: rgba(60, 60, 60, 0.95);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.create-btn:active {
+  transform: translateY(0);
 }
 
 /* container from gallery.html */
@@ -103,6 +127,21 @@
   background-position: right 10px center;
   background-size: 16px 16px;
   border: none;
+  transition: background-color 0.3s ease, transform 0.2s ease,
+    box-shadow 0.3s ease;
+}
+
+#filter:hover,
+.legend-select-mobile:hover {
+  background-color: rgb(200, 10, 10);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(174, 2, 2, 0.4);
+}
+
+#filter:active,
+.legend-select-mobile:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 /* gender dropdown: hidden by default, shown only on small screens */
@@ -113,7 +152,6 @@
 /* view / trace buttons */
 .view-btn {
   padding: 8px 14px;
-  margin: 4px;
   background-color: rgb(174, 2, 2);
   color: #fff;
   border: none;
@@ -127,6 +165,8 @@
   justify-content: center;
   gap: 4px;
   height: auto;
+  transition: background-color 0.3s ease, transform 0.2s ease,
+    box-shadow 0.3s ease;
 }
 
 .view-btn:disabled,
@@ -134,6 +174,17 @@
   opacity: 0.5;
   cursor: default;
   pointer-events: none;
+}
+
+.view-btn:hover {
+  background-color: rgb(200, 10, 10);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(174, 2, 2, 0.4);
+}
+
+.view-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 /* gender legend icon buttons */
@@ -145,14 +196,29 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.2s ease;
 }
 
-/* icon shapes */
+.legend-btn:hover {
+  color: #cab084;
+  transform: scale(1.05);
+}
+
+.legend-btn:active {
+  transform: scale(0.98);
+  color: #cab084;
+}
+.legend-btn.active {
+  color: #cab084;
+}
+
 .legend-icon {
   display: inline-block;
   width: 70px;
   height: 70px;
   background-color: currentColor;
+  transition: background-color 0.3s ease;
 }
 
 .legend-icon.icon-men {
@@ -168,20 +234,6 @@
 .legend-icon.icon-children {
   -webkit-mask: url("assets/icon-children.svg") no-repeat center / contain;
   mask: url("assets/icon-children.svg") no-repeat center / contain;
-}
-
-/* active button color — icons inherit via currentColor */
-.legend-btn.active,
-button.legend-btn.active {
-  color: #cab084;
-}
-
-button#children.active .legend-icon.icon-children,
-button#men.active .legend-icon.icon-men,
-button#women.active .legend-icon.icon-women,
-button#identified.active .legend-icon.icon-identified,
-button#politics.active .legend-icon.icon-politics {
-  background-color: currentColor;
 }
 
 /* NARROW LAYOUT: phones + tablets + small laptops */
@@ -215,7 +267,6 @@ button#politics.active .legend-icon.icon-politics {
     flex: 0 0 auto; /* no weird stretching */
   }
 
-  /* dropdowns and buttons narrower (you already had these styles) */
   #filter,
   .legend-select-mobile {
     /* min-width: 0; */

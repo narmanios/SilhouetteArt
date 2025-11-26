@@ -93,6 +93,35 @@ main,
   z-index: 2;
 }
 
+.gallery-item {
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 3px solid transparent;
+}
+
+.gallery-item:hover {
+  border-color: #cab084;
+  transform: scale(1.05);
+}
+
+.restore-filters-btn {
+  margin-top: 12px;
+  padding: 8px 10px;
+  background-color: rgb(174, 2, 2);
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.restore-filters-btn:hover {
+  background-color: rgb(200, 10, 10);
+  transform: translateY(-1px);
+}
+
 /* ---------------------------------------------------
    Large Gallery / Carousel
 --------------------------------------------------- */
@@ -121,6 +150,29 @@ main,
   border: 1px solid rgba(255, 255, 255, 0.03);
   position: relative;
   overflow: hidden;
+}
+
+.carousel-counter {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100020;
+  padding: 10px 18px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #ffffff;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.carousel-page-counter {
+  text-align: center;
+  padding: 12px;
+  color: #000000;
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 
 .large-gallery .close-btn {
@@ -821,7 +873,7 @@ main,
   .large-gallery .carousel-image-area {
     /* width: 100%; */
     max-height: calc(90vh - 90px);
-    overflow: scroll;
+    /* overflow: scroll; */
     display: grid;
     align-items: center;
     justify-content: center;

@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="header.css">
     <link rel="stylesheet" href="selfie.css">
 
+
     <title>Webcam Button Demo</title>
 
 </head>
@@ -37,7 +38,7 @@
 
 
     <div class="wrap">
-        <h1>Open Your Webcam</h1>
+        <h2>Capture your Silhouette</h2>
 
         <div class="controls">
             <button id="openBtn">Open camera</button>
@@ -59,25 +60,48 @@
                 <div class="controls">
                     <a id="downloadLink" download="snapshot.png" hidden>Download sihouette</a>
                 </div>
-            </div>
-        </div>
 
-        <p class="note">
+            </div>
+
+
+        </div>
+        <p class="selfie_directions">1. Open your camera.<br>2. Place your cursor over the "capture photo" button. <br>
+            3. Turn your head to the side.<br>4. Look forward & click to capture your silhouette.
+            <br><span style="font-style: italic;">Silhouette may take approximately one minute to process.</span>
+        </p>
+        <!-- <p class="note">
             Tip: This page must be served over <strong>HTTPS</strong> (or <code>http://localhost</code>) for the
             browser
             to allow camera access.
             On iOS/Safari, you must tap a button to start the camera.
-        </p>
+        </p> -->
         <p id="error" class="error" role="alert" hidden></p>
     </div>
 
     <script>
+        async function preload() {
+            let Gradio = await import("https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js");
+            mClient = await Gradio.Client.connect("arman396/Smithsonian"); console.log("Gradio client loaded", Gradio, mClient);
+        }
+
+        async function runFilter(imgBlob) {
+            let input = {
+                input_image: imgBlob,
+
+            }
+
+            let filterRes = await mClient.predict("/predict", input);
+            return filterRes.data[0].url;
+        }
+
+        preload();
+
         const openBtn = document.getElementById('openBtn');
         const stopBtn = document.getElementById('stopBtn');
         const snapBtn = document.getElementById('snapBtn');
         const deviceSelect = document.getElementById('deviceSelect');
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
+        // const video = document.getElementById('video');
+        // const canvas = document.getElementById('canvas');
         const preview = document.getElementById('preview');
         const downloadLink = document.getElementById('downloadLink');
         const errorEl = document.getElementById('error');
@@ -144,7 +168,7 @@
             snapBtn.disabled = true;
         }
 
-        function capturePhoto() {
+        async function capturePhoto() {
             if (!currentStream) return;
             const track = currentStream.getVideoTracks()[0];
             const settings = track.getSettings();
@@ -156,7 +180,12 @@
             ctx.drawImage(video, 0, 0, w, h);
             const dataUrl = canvas.toDataURL('image/png');
             preview.src = dataUrl;
-            downloadLink.href = dataUrl;
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png')); console.log('Captured photo blob:', blob);
+            const modifiedBlob = await runFilter(blob); console.log('Modified blob:', modifiedBlob);
+            preview.src = modifiedBlob;
+            downloadLink.href = modifiedBlob;
+            downloadLink.download = 'silhouette.webp';
+            downloadLink.target = '_blank';
             downloadLink.hidden = false;
             downloadLink.textContent = 'Download silhouette';
         }
@@ -183,6 +212,55 @@
         window.addEventListener('beforeunload', stopStream);
 
 
+        const fileInput = document.getElementById('fileInput');
+        const canvas = document.getElementById('canvas');
+        const video = document.getElementById('video'); // your video element
+        const ctx = canvas.getContext('2d');
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    // Stop camera if running
+                    if (video && video.srcObject) {
+                        const stream = video.srcObject;
+                        stream.getTracks().forEach(track => track.stop());
+                        video.srcObject = null;
+                    }
+
+                    // Set canvas size to match image (or limit max size)
+                    const maxWidth = 640;
+                    const maxHeight = 480;
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Scale down if too large
+                    if (width > maxWidth) {
+                        height = (maxWidth / width) * height;
+                        width = maxWidth;
+                    }
+                    if (height > maxHeight) {
+                        width = (maxHeight / height) * width;
+                        height = maxHeight;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    // Draw uploaded image to canvas as preview
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Now the image is on canvas - you can apply filters/effects
+                    // or let user snap/download this preview
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
     </script>
 
 </body>
