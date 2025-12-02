@@ -1,0 +1,327 @@
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif;
+  margin: 0;
+
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  /* vertical center */
+  justify-content: center;
+  /* horizontal center */
+  /* background-color: rgb(255, 255, 255); */
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0;
+  color: #ffffff;
+  text-align: center;
+}
+.subtitle {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.randomize-btn {
+  display: block;
+  margin: 20px auto 30px;
+  padding: 12px 24px;
+  background: rgba(190, 0, 0, 0.95);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.randomize-btn:hover {
+  background: rgba(190, 0, 0, 1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.randomize-btn:active {
+  transform: translateY(0);
+}
+
+/* Back button styling - centered above gallery with proper spacing */
+.frame .back-btn {
+  display: block;
+  text-align: center;
+  margin: 10px auto 20px;
+  width: fit-content;
+}
+
+/* Ensure frame has proper top margin */
+.frame {
+  margin-top: 100px;
+}
+
+/* Add top margin to gallery to prevent overlap */
+#face-gallery {
+  margin-top: 20px;
+}
+
+/* Back to gallery link/button */
+.back-btn {
+  font-size: 12px;
+  position: fixed;
+  top: 100px;
+  left: 16px;
+  padding-left: 26px; /* space for arrow */
+  font-weight: 400;
+  color: #ffffff;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  z-index: 10;
+}
+
+.back-btn::after {
+  content: "";
+  position: fixed;
+  top: 48px;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(
+    to bottom,
+    #000000 0%,
+    rgba(0, 0, 0, 0.8) 50%,
+    transparent 100%
+  );
+  z-index: -1;
+  pointer-events: none;
+}
+
+.back-btn::before {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path d='M12 6 L8 10 L12 14' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>");
+}
+
+/* Headline logo size fix */
+#headline img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Gallery grid */
+#face-gallery {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  width: 100%;
+}
+
+#face-gallery .gallery-item {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+#face-gallery .gallery-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.overlay-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #ffffff;
+  color: #000000;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 6px;
+  z-index: 10001;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: background 0.2s ease;
+}
+
+.overlay-close:hover {
+  background: #e0e0e0;
+}
+/* Overlay styles - matching carousel card design */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px) saturate(90%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+/* Overlay two-column layout */
+.overlay-content {
+  width: min(92vw, 1200px);
+  max-width: 1200px;
+  max-height: 90vh;
+  background: rgba(255, 252, 223, 0.96);
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 40px 80px rgba(2, 6, 23, 0.65), 0 8px 24px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 40px;
+}
+
+.overlay-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.overlay-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.overlay-left img {
+  width: 100%;
+  height: 400px;
+  object-fit: contain;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.placeholder-area {
+  width: 100%;
+  height: 400px;
+  background: rgba(0, 0, 0, 0.05);
+  border: 2px dashed rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.placeholder-area::before {
+  content: "Generated image will appear here";
+  color: rgba(0, 0, 0, 0.4);
+  font-size: 14px;
+  text-align: center;
+  position: absolute;
+  z-index: 1;
+}
+
+.placeholder-area img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  z-index: 10;
+  position: relative;
+}
+
+.placeholder-area img[style*="display: none"] ~ .placeholder-area::before {
+  display: block;
+}
+
+.generate-btn {
+  padding: 12px 24px;
+  background: rgba(190, 0, 0, 0.95);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  align-self: center;
+}
+
+.generate-btn:hover {
+  transform: translateY(-1px);
+}
+
+.overlay-caption {
+  color: #000000;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.4;
+  max-width: 100%;
+  align-self: center;
+}
+
+/* Tablet - 3 columns */
+@media (max-width: 1024px) {
+  #face-gallery {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Mobile - 2 columns */
+@media (max-width: 640px) {
+  #face-gallery {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .overlay-content {
+    flex-direction: column;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .placeholder-area {
+    min-height: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .overlay-content {
+    padding: 24px;
+    gap: 20px;
+  }
+
+  .overlay-close {
+    top: 12px;
+    right: 12px;
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+
+  .placeholder-area {
+    min-height: 200px;
+  }
+}

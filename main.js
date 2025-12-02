@@ -48,6 +48,7 @@
   // ----------------------------
   // constants
   // ----------------------------
+
   const DATA_URL = "data/dataset.json";
 
   // Basic keyword list
@@ -263,6 +264,16 @@
           v = "all";
         }
         currentFilter = v;
+
+        // Show/hide the identify button based on filter
+        const identifyBtn = document.getElementById("identify-btn");
+        if (identifyBtn) {
+          if (v === "unidentified") {
+            identifyBtn.classList.remove("hidden");
+          } else {
+            identifyBtn.classList.add("hidden");
+          }
+        }
 
         // When the main dropdown changes, we don't force gender,
         // just re-apply filters with current activeGender.

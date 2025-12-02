@@ -7,9 +7,9 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="header.css">
     <link rel="stylesheet" href="selfie.css">
-    <link rel="stylesheet" href="face.css">
 
-    <title>Your Silhouette Selfie</title>
+
+    <title>Webcam Button Demo</title>
 
 </head>
 
@@ -20,19 +20,24 @@
 
     <div id="sticky-header">
         <div id="headline">
-            <a href="index.html">
-                <img src="assets/logo.svg" alt="Headline">
-            </a>
+            <a href="index.html"><img src="assets/logo.svg" alt="Headline" id="selfie-logo"></a>
         </div>
+    </div>
+    <div>
+        <a href="gallery.html" class="back-btn">
+            Back to gallery
+        </a>
+
+
+
+
+
+
     </div>
 
 
 
-
     <div class="wrap">
-        <a href="gallery.html" class="back-btn">
-            Back to gallery
-        </a>
         <h1>Open Your Webcam</h1>
 
         <div class="controls">
@@ -51,90 +56,67 @@
             </div>
             <div>
                 <canvas id="canvas" width="640" height="480" hidden></canvas>
-                <div class="preview-container">
-                    <img id="preview" alt="" />
-                </div>
+                <img id="preview" alt="Snapshot will appear here" />
                 <div class="controls">
-                    <a id="downloadLink" download="snapshot.png" hidden>Download silhouette</a>
+                    <a id="downloadLink" download="snapshot.png" hidden>Download sihouette</a>
                 </div>
             </div>
 
             <!-- Add this upload button -->
             <label for="fileInput" class="upload-btn">
+                Upload Image
                 <input type="file" id="fileInput" accept="image/*" style="display: none;">
             </label>
         </div>
 
-        <!-- <p class="note">
+        <p class="note">
             Tip: This page must be served over <strong>HTTPS</strong> (or <code>http://localhost</code>) for the
             browser
             to allow camera access.
             On iOS/Safari, you must tap a button to start the camera.
-        </p> -->
+        </p>
         <p id="error" class="error" role="alert" hidden></p>
         <p class="selfie_directions">1. Open your camera.<br>2. Place your cursor over the "capture photo" button. <br>
-            3. Turn your head to the side.<br>4. Click to capture your photo.<br>5. Download your silhouette.
+            3. Turn your head to the side.<br>4. Look forward & click to capture your silhouette.
             <br><span style="font-style: italic;">Silhouette may take approximately one minute to process.</span>
         </p>
     </div>
 
     <script>
-        let mClient;
-        let isClientReady = false;
 
-        // Declare all DOM elements first
-        const openBtn = document.getElementById('openBtn');
-        const stopBtn = document.getElementById('stopBtn');
-        const snapBtn = document.getElementById('snapBtn');
-        const deviceSelect = document.getElementById('deviceSelect');
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const preview = document.getElementById('preview');
-        const downloadLink = document.getElementById('downloadLink');
-        const errorEl = document.getElementById('error');
-        const fileInput = document.getElementById('fileInput');
-        const ctx = canvas.getContext('2d');
 
-        let currentStream = null;
-
-        function showError(err) {
-            console.error(err);
-            errorEl.hidden = false;
-            errorEl.textContent = err?.message || String(err);
-        }
-
-        function clearError() {
-            errorEl.hidden = true;
-            errorEl.textContent = '';
-        }
+        ////added code below when integrating gradio model stopped working
+        let mClient; // Declare at top level
+        ////////////////////////////////////////////
 
         async function preload() {
-            try {
-                let Gradio = await import("https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js");
-                mClient = await Gradio.Client.connect("arman396/Smithsonian");
-                isClientReady = true;
-                console.log("Gradio client loaded", Gradio, mClient);
-
-                // Enable snap button if camera is already open
-                if (currentStream && snapBtn) snapBtn.disabled = false;
-            } catch (err) {
-                console.error("Failed to load Gradio client:", err);
-                showError(err);
-            }
+            let Gradio = await import("https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js");
+            mClient = await Gradio.Client.connect("arman396/Smithsonian"); console.log("Gradio client loaded", Gradio, mClient);
         }
 
         async function runFilter(imgBlob) {
-            if (!mClient || !isClientReady) {
-                throw new Error('Silhouette filter is still loading, please wait...');
-            }
-
             let input = {
                 input_image: imgBlob,
+
             }
 
             let filterRes = await mClient.predict("/predict", input);
             return filterRes.data[0].url;
         }
+
+        preload();
+
+        const openBtn = document.getElementById('openBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const snapBtn = document.getElementById('snapBtn');
+        const deviceSelect = document.getElementById('deviceSelect');
+        // const video = document.getElementById('video');
+        // const canvas = document.getElementById('canvas');
+        const preview = document.getElementById('preview');
+        const downloadLink = document.getElementById('downloadLink');
+        const errorEl = document.getElementById('error');
+
+        let currentStream = null;
 
         async function listDevices() {
             try {
@@ -158,6 +140,7 @@
         async function openCamera() {
             clearError();
             try {
+                // stop previous stream if any
                 stopStream();
 
                 const deviceId = deviceSelect.value || undefined;
@@ -170,12 +153,14 @@
                 currentStream = stream;
                 video.srcObject = stream;
 
+                // Some browsers need play() to be awaited after setting srcObject
                 await video.play();
 
                 openBtn.disabled = true;
                 stopBtn.disabled = false;
-                snapBtn.disabled = !isClientReady; // Only enable if client is ready
+                snapBtn.disabled = false;
 
+                // After getting permission once, labels become available
                 await listDevices();
             } catch (err) {
                 showError(err);
@@ -200,34 +185,28 @@
             const settings = track.getSettings();
             const w = settings.width || 640;
             const h = settings.height || 480;
-            canvas.width = w;
-            canvas.height = h;
+            canvas.width = w; canvas.height = h;
 
+            const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, w, h);
             const dataUrl = canvas.toDataURL('image/png');
             preview.src = dataUrl;
-
-            if (!isClientReady || !mClient) {
-                showError(new Error('Silhouette filter is still loading. Please wait and try again.'));
-                return;
-            }
-
-            try {
-                const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                console.log('Captured photo blob:', blob);
-                const modifiedBlob = await runFilter(blob);
-                console.log('Modified blob:', modifiedBlob);
-                preview.src = modifiedBlob;
-                downloadLink.href = modifiedBlob;
-                downloadLink.download = 'silhouette.webp';
-                downloadLink.target = '_blank';
-                downloadLink.hidden = false;
-                downloadLink.textContent = 'Download silhouette';
-                clearError();
-            } catch (err) {
-                showError(err);
-            }
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png')); console.log('Captured photo blob:', blob);
+            const modifiedBlob = await runFilter(blob); console.log('Modified blob:', modifiedBlob);
+            preview.src = modifiedBlob;
+            downloadLink.href = modifiedBlob;
+            downloadLink.download = 'silhouette.webp';
+            downloadLink.target = '_blank';
+            downloadLink.hidden = false;
+            downloadLink.textContent = 'Download silhouette';
         }
+
+        function showError(err) {
+            console.error(err);
+            errorEl.hidden = false;
+            errorEl.textContent = err?.message || String(err);
+        }
+        function clearError() { errorEl.hidden = true; errorEl.textContent = ''; }
 
         // Wire up events
         openBtn.addEventListener('click', openCamera);
@@ -235,27 +214,42 @@
         snapBtn.addEventListener('click', capturePhoto);
         deviceSelect.addEventListener('change', () => { if (!openBtn.disabled) return; openCamera(); });
 
-        // File upload handler
-        // File upload handler
-        fileInput.addEventListener('change', async (e) => {
+        // Populate device list early (labels may be blank until permission granted)
+        if (navigator.mediaDevices?.enumerateDevices) {
+            listDevices();
+        }
+
+        // Handle page unload
+        window.addEventListener('beforeunload', stopStream);
+
+
+        const fileInput = document.getElementById('fileInput');
+        const canvas = document.getElementById('canvas');
+        const video = document.getElementById('video'); // your video element
+        const ctx = canvas.getContext('2d');
+
+        fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
             const reader = new FileReader();
-            reader.onload = async (event) => {
+            reader.onload = (event) => {
                 const img = new Image();
-                img.onload = async () => {
+                img.onload = () => {
+                    // Stop camera if running
                     if (video && video.srcObject) {
                         const stream = video.srcObject;
                         stream.getTracks().forEach(track => track.stop());
                         video.srcObject = null;
                     }
 
+                    // Set canvas size to match image (or limit max size)
                     const maxWidth = 640;
                     const maxHeight = 480;
                     let width = img.width;
                     let height = img.height;
 
+                    // Scale down if too large
                     if (width > maxWidth) {
                         height = (maxWidth / width) * height;
                         width = maxWidth;
@@ -267,48 +261,17 @@
 
                     canvas.width = width;
                     canvas.height = height;
+
+                    // Draw uploaded image to canvas as preview
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // Show original preview first
-                    preview.src = canvas.toDataURL('image/png');
-
-                    // Apply silhouette filter
-                    if (!isClientReady || !mClient) {
-                        showError(new Error('Silhouette filter is still loading. Please wait and try again.'));
-                        return;
-                    }
-
-                    try {
-                        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                        console.log('Uploaded photo blob:', blob);
-                        const modifiedBlob = await runFilter(blob);
-                        console.log('Modified blob:', modifiedBlob);
-                        preview.src = modifiedBlob;
-                        downloadLink.href = modifiedBlob;
-                        downloadLink.download = 'silhouette.webp';
-                        downloadLink.target = '_blank';
-                        downloadLink.hidden = false;
-                        downloadLink.textContent = 'Download silhouette';
-                        clearError();
-                    } catch (err) {
-                        showError(err);
-                    }
+                    // Now the image is on canvas - you can apply filters/effects
+                    // or let user snap/download this preview
                 };
                 img.src = event.target.result;
             };
             reader.readAsDataURL(file);
         });
-
-        // Populate device list
-        if (navigator.mediaDevices?.enumerateDevices) {
-            listDevices();
-        }
-
-        // Handle page unload
-        window.addEventListener('beforeunload', stopStream);
-
-        // Start loading Gradio client
-        preload();
     </script>
 
 </body>

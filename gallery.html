@@ -3,6 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
+    <title>Gallery Silhouettes</title>
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Silhouette Art of Early America</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -62,8 +64,9 @@
 
                 <select id="filter" name="filter">
                     <option value="all" selected>All silhouettes</option>
-                    <option value="unidentified">Unidentified</option>
                     <option value="identified">Name Known</option>
+                    <option value="unidentified">Unidentified</option>
+
                     <option value="politics">Politics</option>
                     <option value="military">Military</option>
                     <option value="yearone">Made 1803-04</option>
@@ -80,6 +83,7 @@
                 </button>
 
 
+
                 <div>
                     <button class="create-btn" title="create">
                         <a href="selfie.html">Snap your Silo</a>
@@ -90,11 +94,12 @@
         </div>
 
 
-
-
-
-
         <div class="frame container mx-auto px-4 py-6">
+            <!-- Add the identify button here, above the gallery -->
+            <button id="identify-btn" class="identify-btn hidden">
+                <a href="face.html">Reveal a face</a>
+            </button>
+
             <div class="portraits col-span-1 lg:col-span-4 w-full">
                 <!-- increased columns: more thumbnails per row -->
                 <div id="gallery"
@@ -103,26 +108,37 @@
                 </div>
             </div>
 
-            <aside class="space-y-4">
-                <div id="large-gallery" class="large-gallery hidden"></div>
-            </aside>
-
-        </div>
-
-        <div id="scroll-card" class="scroll-card" aria-hidden="true">
-            <div class="scroll-card-text">Your message here — replace this text.</div>
-        </div>
 
 
+            <div class="frame container mx-auto px-4 py-6">
+                <div class="portraits col-span-1 lg:col-span-4 w-full">
+                    <!-- increased columns: more thumbnails per row -->
+                    <div id="gallery"
+                        class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-12 xl:grid-cols-20 gap-2">
+                        <!-- JS will append <div class="col"> items here -->
+                    </div>
+                </div>
 
-        <script type="module" src="main.js"></script>
+                <aside class="space-y-4">
+                    <div id="large-gallery" class="large-gallery hidden"></div>
+                </aside>
 
-        <script type="module" src="sketch.js"></script>
+            </div>
+
+            <div id="scroll-card" class="scroll-card" aria-hidden="true">
+                <div class="scroll-card-text">Your message here — replace this text.</div>
+            </div>
 
 
 
-        <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/gsap.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/MorphSVGPlugin.min.js"></script>
+            <script type="module" src="main.js"></script>
+
+            <script type="module" src="sketch.js"></script>
+
+
+
+            <script src="https://cdn.jsdelivr.net/npm/gsap@3.13/dist/gsap.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/MorphSVGPlugin.min.js"></script>
 
 </body>
 

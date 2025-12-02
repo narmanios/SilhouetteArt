@@ -7,9 +7,9 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="header.css">
     <link rel="stylesheet" href="selfie.css">
-    <link rel="stylesheet" href="face.css">
 
-    <title>Your Silhouette Selfie</title>
+
+    <title>Your Silhouette</title>
 
 </head>
 
@@ -20,19 +20,24 @@
 
     <div id="sticky-header">
         <div id="headline">
-            <a href="index.html">
-                <img src="assets/logo.svg" alt="Headline">
-            </a>
+            <a href="index.html"><img src="assets/logo.svg" alt="Headline"></a>
         </div>
+    </div>
+    <div>
+        <a href="gallery.html" class="back-btn">
+            Back to gallery
+        </a>
+
+
+
+
+
+
     </div>
 
 
 
-
     <div class="wrap">
-        <a href="gallery.html" class="back-btn">
-            Back to gallery
-        </a>
         <h1>Open Your Webcam</h1>
 
         <div class="controls">
@@ -51,11 +56,9 @@
             </div>
             <div>
                 <canvas id="canvas" width="640" height="480" hidden></canvas>
-                <div class="preview-container">
-                    <img id="preview" alt="" />
-                </div>
+                <img id="preview" alt="Snapshot will appear here" />
                 <div class="controls">
-                    <a id="downloadLink" download="snapshot.png" hidden>Download silhouette</a>
+                    <a id="downloadLink" download="snapshot.png" hidden>Download sihouette</a>
                 </div>
             </div>
 
@@ -65,12 +68,12 @@
             </label>
         </div>
 
-        <!-- <p class="note">
+        <p class="note">
             Tip: This page must be served over <strong>HTTPS</strong> (or <code>http://localhost</code>) for the
             browser
             to allow camera access.
             On iOS/Safari, you must tap a button to start the camera.
-        </p> -->
+        </p>
         <p id="error" class="error" role="alert" hidden></p>
         <p class="selfie_directions">1. Open your camera.<br>2. Place your cursor over the "capture photo" button. <br>
             3. Turn your head to the side.<br>4. Click to capture your photo.<br>5. Download your silhouette.

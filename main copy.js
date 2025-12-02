@@ -82,24 +82,11 @@
     "i"
   );
 
-  const FIRSTLADIES_WORDS = [
-    "first lady",
-    "first ladies",
-    "Presidents' spouses",
-  ];
-  // // const RX_FIRSTLADIES = new RegExp(
-  // //   "\\b(" + FIRSTLADIES_WORDS.join("|") + ")\\b",
-  // //   "i"
-  // // );
+  const YEARONE_WORDS = ["1803-04"];
+  const RX_YEARONE = new RegExp("\\b(" + YEARONE_WORDS.join("|") + ")\\b", "i");
 
-  // // const FIRSTLADIES_WORDS = ["first\\s+lady", "first\\s+ladies"];
-
-  const RX_FIRSTLADIES = new RegExp(
-    "\\b(" + FIRSTLADIES_WORDS.join("|") + ")\\b",
-    "i"
-  );
-
-  // const RX_FIRSTLADIES = /first\s+lad(?:y|ies)|presidents'\s+spouses/i;
+  const YEARTWO_WORDS = ["1804"];
+  const RX_YEARTWO = new RegExp("\\b(" + YEARTWO_WORDS.join("|") + ")\\b", "i");
 
   // Gender-ish regexes
   const RX_MEN = /\b(men|man|male|gentleman|gentlemen)\b/i;
@@ -151,22 +138,26 @@
     return RX_MILITARY.test(txt);
   }
 
-  function matchesFirstLadies(rec) {
-    const txt = (
-      field(rec, "title") +
-      " " +
-      field(rec, "name") +
-      " " +
-      field(rec, "topic") +
-      " " +
-      field(rec, "indexed_topics")
-    )
-      .trim()
-      .toLowerCase();
+  function matchesYearOne(rec) {
+    const txt = field(rec, "date").trim().toLowerCase();
+    if (txt.includes("1803-04") || txt.includes("1803")) {
+      console.log(RX_YEARONE.test(txt));
+      console.log(txt);
+      console.log(rec);
+      console.log(RX_YEARONE);
+    }
+    return RX_YEARONE.test(txt);
+  }
 
-    console.log(RX_FIRSTLADIES.test(txt));
-
-    return RX_FIRSTLADIES.test(txt);
+  function matchesYearTwo(rec) {
+    const txt = field(rec, "date").trim().toLowerCase();
+    if (txt.includes("1804") || txt.includes("1803")) {
+      console.log(RX_YEARTWO.test(txt));
+      console.log(txt);
+      console.log(rec);
+      console.log(RX_YEARTWO);
+    }
+    return RX_YEARTWO.test(txt);
   }
 
   function matchesGender(rec, which) {
@@ -265,7 +256,8 @@
             "named",
             "politics",
             "military",
-            "firstladies",
+            "yearone",
+            "yeartwo",
           ].includes(v)
         ) {
           v = "all";
@@ -313,13 +305,37 @@
       if (currentFilter === "named") return isNamed(r);
       if (currentFilter === "politics") return matchesPolitics(r);
       if (currentFilter === "military") return matchesMilitary(r);
-      if (currentFilter === "firstladies") return matchesFirstLadies(r);
+      if (currentFilter === "yearone") return matchesYearOne(r);
+      if (currentFilter === "yeartwo") return matchesYearTwo(r);
 
       // "all"
       return true;
     });
 
     renderGrid(filtered);
+  }
+  // Add this function right before renderGrid() (around line 327)
+  function updateScrollCard() {
+    const cardEl = document.getElementById("scroll-card");
+    if (!cardEl) return;
+
+    const total =
+      silhouettes && silhouettes.length ? silhouettes.length : records.length;
+    const visible = $all(".gallery-item").length || 0;
+    const selected = $all(".gallery-item.selected").length || 0;
+
+    const textDiv = cardEl.querySelector(".scroll-card-text");
+    let text = `${visible.toLocaleString()} of ${total.toLocaleString()} silhouettes`;
+
+    if (selected > 0) {
+      text += ` • ${selected} selected`;
+    }
+
+    if (textDiv) {
+      textDiv.textContent = text;
+    } else {
+      cardEl.textContent = text;
+    }
   }
 
   // Render the grid as a set of <div class="gallery-item"> cards.
@@ -328,8 +344,36 @@
 
     // No results message.
     if (!items || items.length === 0) {
-      grid.innerHTML =
-        '<div class="text-white text-center col-span-full py-8 opacity-70">No results found</div>';
+      grid.innerHTML = `
+    <div class="text-white text-center col-span-full py-8 opacity-70">
+      <p>No results found</p>
+      <button id="restore-filters-btn" class="restore-filters-btn">Restore Filters</button>
+    </div>
+  `;
+      // Add click handler to restore filters
+      const restoreBtn = document.getElementById("restore-filters-btn");
+      if (restoreBtn) {
+        restoreBtn.addEventListener("click", () => {
+          // Reset filters
+          activeGender = null;
+          currentFilter = "all";
+
+          // Update UI
+          if (dropdown) dropdown.value = "all";
+          if (legendSelect) legendSelect.value = "all";
+          ["men", "women", "children"].forEach((gid) => {
+            const gbtn = $("#" + gid);
+            if (gbtn) gbtn.classList.remove("active");
+          });
+
+          // Re-render with all silhouettes
+          renderGrid(silhouettes);
+        });
+      }
+
+      updateScrollCard();
+      return;
+
       // update scroll card count when no results
       const cardElEmpty = document.getElementById("scroll-card");
       if (cardElEmpty) {
@@ -394,6 +438,7 @@
     //   .join("");
 
     grid.innerHTML = html;
+    updateScrollCard(); // Add this at the end
   }
 
   (function initScrollCard() {
@@ -489,6 +534,7 @@
         if (viewCollection) viewCollection.removeAttribute("disabled");
         if (morphCollection) morphCollection.removeAttribute("disabled");
       }
+      updateScrollCard(); // Add this line
     });
   }
 
@@ -587,15 +633,17 @@
     if (!lightbox || !slides || slides.length === 0) return;
 
     lightbox.innerHTML = `
-      <button class="close-btn" aria-label="Close carousel">Close</button>
-      <div class="carousel-outer" role="dialog" aria-modal="true">
-        <button class="carousel-prev" aria-label="Previous">&#8592;</button>
-        
-                <div class="scroll-container"><div class="item-container"><div class="carousel-image-area"></div></div></div>
+    <button class="close-btn" aria-label="Close carousel">Close</button>
+    <div class="carousel-outer" role="dialog" aria-modal="true">
+      <button class="carousel-prev" aria-label="Previous">&#8592;</button>
+      
+      <div class="scroll-container"><div class="item-container"><div class="carousel-image-area"></div></div></div>
 
-        <button class="carousel-next" aria-label="Next">&#8594;</button>
-      </div>
-    `;
+      <button class="carousel-next" aria-label="Next">&#8594;</button>
+    </div>
+    <div class="carousel-counter">${slides.length} selected</div>
+  `;
+
     lightbox.classList.remove("hidden");
 
     const area = $(".carousel-image-area", lightbox);
