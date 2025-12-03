@@ -7,10 +7,8 @@ https://narmanios.github.io/SilhouetteArt/index.html
 'Silhouette Art of Early America' is a data visualization inspired by the work of William Bache. It explores over 1800 of his silhouettes. Inexpensive to create his sitters could keep them as mementos, share with family or place them inside a locket. The sitters include unidentified as well as named men, women and children. Like many similar silhouette artisans', one of the techniques involved carefully tracing a person's profile using a device called a physiognotrace. The outlines and ‘tracing’ of these profiles is visualized in this project. Any combination of silhouettes can be selected and explored.
 
 ![Homescreen](screenshots/landing.jpg)
-<br />
 
 ![About page](screenshots/about.jpg)
-<br />
 
 ![Interior gallery page](screenshots/gallery.jpg)
 
@@ -18,11 +16,11 @@ https://narmanios.github.io/SilhouetteArt/index.html
 
 ![Tracing of a collection](screenshots/trace.jpg)
 
-![Tracing of a collection](screenshots/trace2.jpg)
-
 ![Your silhouette](screenshots/selfie.jpg)
 
 ![Your silhouette](screenshots/unidentified-AI.jpg)
+
+![Tracing of a collection](screenshots/unidentified-AI-2.jpg)
 
 ---
 
@@ -33,13 +31,13 @@ Project initiative. It draws upon materials from the Smithsonian Institution’s
 
 #### Bache Album information
 
-https://npg.si.edu/bache/">https://npg.si.edu/bache/
+https://npg.si.edu/bache
 
 #### Dataset
 
 In addition, this project utilises the Smithsonian Revolutionary Era Collections dataset, a curated subset of the Smithsonian’s Open Access corpus created by the Revolution Crossroads initiative. The dataset brings together 12,667 records and nearly 3,941 linked images of objects dating from 1770–1810, drawn from four Smithsonian museums: the National Museum of American History, the National Postal Museum, the Smithsonian American Art Museum, and the National Portrait Gallery.
 
-https://huggingface.co/RevolutionCrossroads">https://huggingface.co/RevolutionCrossroads
+https://huggingface.co/RevolutionCrossroads
 
 #### Neven Armanios, Data Visualization, Major Studio 1, Fall 2025.
 
@@ -47,7 +45,7 @@ https://huggingface.co/RevolutionCrossroads">https://huggingface.co/RevolutionCr
 
 Silhouette outline extraction using OpenCV edge detection.
 
-href="https://github.com/PGDV-5200-2025F-A/silhouettes">https://github.com/PGDV-5200-2025F-A/silhouettes
+https://github.com/PGDV-5200-2025F-A/silhouettes
 
 #### Hue Huynh, Data Engineer.
 
