@@ -301,6 +301,30 @@
   -webkit-mask: url("assets/icon-children.svg") no-repeat center / contain;
   mask: url("assets/icon-children.svg") no-repeat center / contain;
 }
+
+@media (max-width: 1000px) {
+  #gallery {
+    padding-top: 0;
+    padding-bottom: 80px; /* Add extra padding to push gallery items up */
+  }
+
+  /* Remove gallery top offset scroll */
+  .scroll-card {
+    bottom: 90px;
+  }
+
+  .scroll-card.visible {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Force all gallery items below the bottom nav */
+  #gallery .item,
+  #gallery .item img,
+  #gallery .item canvas {
+    position: relative;
+    z-index: 1 !important;
+  }
+}
 @media (max-width: 1000px) {
   #sticky-header {
     flex-direction: row;
@@ -361,7 +385,6 @@
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
     z-index: 9000;
-    pointer-events: none;
   }
 
   /* Move only buttons to bottom of screen */
@@ -379,8 +402,9 @@
     min-width: 0;
     white-space: nowrap;
     overflow: visible;
-    z-index: 10000;
+    z-index: 999999 !important;
     height: 34px;
+    pointer-events: auto; /* Ensure buttons can receive clicks */
   }
 
   /* Move create-btn to bottom too */
@@ -397,9 +421,10 @@
     min-width: 0;
     white-space: nowrap;
     overflow: visible;
-    z-index: 10000;
+    z-index: 999999 !important;
     height: 34px;
     order: 4;
+    pointer-events: auto; /* Ensure button can receive clicks */
   }
 
   .create-btn:hover {
@@ -467,19 +492,21 @@
     box-shadow: none;
   }
 
-  /* #legend-top .view-btn:disabled,
-  #legend-top .identify-btn:disabled {
-    opacity: 0.4;
-    background-color: transparent;
+  #legend-top .view-btn:disabled,
+  #legend-top .identify-btn:disabled,
+  #legend-top #morph-btn:disabled {
+    opacity: 0.4 !important;
+    background-color: transparent !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
   }
 
-  .create-btn {
+  /* .create-btn {
     padding: 6px 8px;
     font-size: 0.65rem;
     position: relative;
     order: 3;
   } */
-
   #sticky-header #headline {
     width: 180px;
     order: 1;
@@ -501,7 +528,7 @@
   body {
     padding-bottom: 60px;
   }
-} /* CLOSE MEDIA QUERY HERE - line 488 */
+}
 
 @media (max-width: 640px) {
   .headline-img {

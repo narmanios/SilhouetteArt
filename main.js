@@ -670,12 +670,13 @@
         };
       });
 
-      openCarousel(slides);
+      let numberOfThumbnails = window.innerWidth < 600 ? 1 : 3;
+      openCarousel(slides, numberOfThumbnails);
     });
   }
 
   // Lightbox carousel showing up to 3 images at a time (with captions/overlay).
-  function openCarousel(slides) {
+  function openCarousel(slides, numberOfThumbnails) {
     if (!lightbox || !slides || slides.length === 0) return;
 
     lightbox.innerHTML = `
@@ -697,7 +698,7 @@
 
     // Renders the current 1–3 visible slides.
     function show() {
-      const visibleCount = Math.min(3, slides.length);
+      const visibleCount = Math.min(numberOfThumbnails, slides.length);
       const start = clamp(index, 0, Math.max(0, slides.length - visibleCount));
       const end = start + visibleCount;
 
@@ -730,12 +731,15 @@
 
     // Navigation controls
     $(".carousel-prev", lightbox).addEventListener("click", () => {
-      index = Math.max(0, index - 3);
+      index = Math.max(0, index - numberOfThumbnails);
       show();
     });
 
     $(".carousel-next", lightbox).addEventListener("click", () => {
-      index = Math.min(Math.max(0, slides.length - 3), index + 3);
+      index = Math.min(
+        Math.max(0, slides.length - numberOfThumbnails),
+        index + numberOfThumbnails
+      );
       console.log("slides.length:", slides.length, "index:", index);
 
       show();
@@ -745,6 +749,14 @@
     $(".close-btn", lightbox).addEventListener("click", () => {
       lightbox.classList.add("hidden");
       lightbox.innerHTML = "";
+    });
+    window.addEventListener("resize", () => {
+      const newNumberOfThumbnails = window.innerWidth < 600 ? 1 : 3;
+      if (newNumberOfThumbnails !== numberOfThumbnails) {
+        lightbox.classList.add("hidden");
+        lightbox.innerHTML = "";
+        openCarousel(slides, newNumberOfThumbnails);
+      }
     });
   }
 
