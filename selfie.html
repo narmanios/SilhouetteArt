@@ -113,6 +113,10 @@
 
         async function preload() {
             try {
+                const _origFetch = window.fetch.bind(window);
+                window.fetch = (url, options = {}) => {
+                    return _origFetch(url, { ...options, credentials: "omit" });
+                };
                 let Gradio = await import("https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js");
                 mClient = await Gradio.Client.connect("arman396/Smithsonian");
                 isClientReady = true;
